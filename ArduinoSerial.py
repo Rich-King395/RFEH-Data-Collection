@@ -1,27 +1,15 @@
 from __future__ import annotations
 
 import csv
-import re
 import time
 from pathlib import Path
+
+from serial_utils import CSV_HEADER, parse_sample_line, sanitize_run_name
 
 
 SERIAL_PORT = "COM3"
 BAUD_RATE = 115200
 DATA_DIR = Path(__file__).resolve().parent / "Data"
-CSV_HEADER = ["Time(ms)", "ADC", "Voltage(V)"]
-
-
-def sanitize_run_name(name: str) -> str:
-    name = name.strip()
-    if name.lower().endswith(".csv"):
-        name = name[:-4]
-
-    name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name).strip(" .")
-    if not name:
-        raise ValueError("File name cannot be empty.")
-
-    return name
 
 
 def ask_record_duration() -> float:
@@ -47,24 +35,6 @@ def ask_run_name() -> str:
             return sanitize_run_name(raw_name)
         except ValueError as exc:
             print(exc)
-
-
-def parse_sample_line(line: str) -> list[str] | None:
-    if line == ",".join(CSV_HEADER):
-        return None
-
-    parts = [part.strip() for part in line.split(",")]
-    if len(parts) != 3:
-        return None
-
-    try:
-        float(parts[0])
-        int(parts[1])
-        float(parts[2])
-    except ValueError:
-        return None
-
-    return parts
 
 
 def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None, int]:

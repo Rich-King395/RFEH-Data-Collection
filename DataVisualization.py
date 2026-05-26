@@ -53,9 +53,14 @@ def plot_voltage_csv(
     csv_path: Path | str,
     output_path: Path | str | None = None,
     window_size: int = 11,
+    smooth: bool = True,
+    show_raw: bool = True,
     normalize_time: bool = True,
     show: bool = False,
 ) -> Path:
+    if not smooth and not show_raw:
+        raise ValueError("At least one of smooth or show_raw must be enabled.")
+
     csv_path = Path(csv_path)
     output_path = Path(output_path) if output_path else csv_path.with_suffix(".png")
 
@@ -64,17 +69,22 @@ def plot_voltage_csv(
         time_ms = time_ms - time_ms[0]
 
     time_s = time_ms / 1000.0
-    voltage_smooth = moving_average(voltage_v, window_size)
 
     plt.figure(figsize=(10, 5))
-    plt.plot(time_s, voltage_v, color="tab:blue", linewidth=0.8, alpha=0.5, label="Raw")
-    plt.plot(
-        time_s,
-        voltage_smooth,
-        color="tab:red",
-        linewidth=2.0,
-        label=f"Smoothed (MA, window={window_size})",
-    )
+    if show_raw:
+        raw_alpha = 0.5 if smooth else 0.9
+        raw_linewidth = 0.8 if smooth else 1.2
+        plt.plot(time_s, voltage_v, color="tab:blue", linewidth=raw_linewidth, alpha=raw_alpha, label="Raw")
+
+    if smooth:
+        voltage_smooth = moving_average(voltage_v, window_size)
+        plt.plot(
+            time_s,
+            voltage_smooth,
+            color="tab:red",
+            linewidth=2.0,
+            label=f"Smoothed (MA, window={window_size})",
+        )
     plt.title("Voltage vs Time")
     plt.xlabel("Time (s)")
     plt.ylabel("Voltage (V)")
@@ -96,6 +106,8 @@ def main() -> None:
     parser.add_argument("csv_path", type=Path, help="Path to a CSV file with Time(ms), ADC, Voltage(V).")
     parser.add_argument("-o", "--output", type=Path, help="Output PNG path. Defaults to CSV path with .png.")
     parser.add_argument("-w", "--window", type=int, default=11, help="Moving average window size.")
+    parser.add_argument("--no-smooth", action="store_true", help="Disable moving-average smoothing.")
+    parser.add_argument("--hide-raw", action="store_true", help="Do not draw the raw voltage line.")
     parser.add_argument("--no-normalize-time", action="store_true", help="Plot Arduino uptime instead of record-relative time.")
     parser.add_argument("--show", action="store_true", help="Show the plot window after saving.")
     args = parser.parse_args()
@@ -104,6 +116,8 @@ def main() -> None:
         csv_path=args.csv_path,
         output_path=args.output,
         window_size=args.window,
+        smooth=not args.no_smooth,
+        show_raw=not args.hide_raw,
         normalize_time=not args.no_normalize_time,
         show=args.show,
     )
