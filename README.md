@@ -1,3 +1,5 @@
+<img width="400" height="600" alt="image" src="https://github.com/user-attachments/assets/4928d760-e457-4c6b-b334-9ea0d61d648a" />
+
 # Arduino VCAP Data Logger
 
 This project records and monitors VCAP voltage samples from an Arduino UNO.
