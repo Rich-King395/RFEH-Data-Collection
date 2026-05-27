@@ -52,7 +52,6 @@ Computer-side recording script.
 Run:
 
 ```powershell
-conda activate UBSS
 python ArduinoSerial.py
 ```
 
@@ -72,7 +71,6 @@ Local web live monitor.
 Run:
 
 ```powershell
-conda activate UBSS
 python LiveServer.py
 ```
 
