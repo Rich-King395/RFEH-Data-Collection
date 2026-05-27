@@ -3,28 +3,45 @@ const state = {
   maxSamples: 150000,
   connected: false,
   status: null,
+  recording: null,
+  fft: null,
   socket: null,
   reconnectTimer: null,
 };
 
 const els = {
   canvas: document.getElementById("chartCanvas"),
+  fftCanvas: document.getElementById("fftCanvas"),
   message: document.getElementById("chartMessage"),
+  fftMessage: document.getElementById("fftMessage"),
+  fftWindowSelect: document.getElementById("fftWindowSelect"),
+  fftRangeSelect: document.getElementById("fftRangeSelect"),
+  fftRateText: document.getElementById("fftRateText"),
   connectionDot: document.getElementById("connectionDot"),
   connectionText: document.getElementById("connectionText"),
   portText: document.getElementById("portText"),
   voltageValue: document.getElementById("voltageValue"),
   adcValue: document.getElementById("adcValue"),
   rateValue: document.getElementById("rateValue"),
-  sampleCount: document.getElementById("sampleCount"),
   errorText: document.getElementById("errorText"),
   rawToggle: document.getElementById("rawToggle"),
   smoothToggle: document.getElementById("smoothToggle"),
   windowSelect: document.getElementById("windowSelect"),
   smoothWindow: document.getElementById("smoothWindow"),
+  recordName: document.getElementById("recordName"),
+  recordDuration: document.getElementById("recordDuration"),
+  startRecord: document.getElementById("startRecord"),
+  stopRecord: document.getElementById("stopRecord"),
+  recordState: document.getElementById("recordState"),
+  recordElapsed: document.getElementById("recordElapsed"),
+  recordSamples: document.getElementById("recordSamples"),
+  recordOutput: document.getElementById("recordOutput"),
+  recordMessage: document.getElementById("recordMessage"),
+  recordPill: document.getElementById("recordPill"),
 };
 
 const ctx = els.canvas.getContext("2d");
+const fftCtx = els.fftCanvas.getContext("2d");
 
 function connect() {
   const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -33,11 +50,14 @@ function connect() {
 
   socket.addEventListener("open", () => {
     setConnection("Connected", "warn");
+    sendFftConfig();
   });
 
   socket.addEventListener("message", (event) => {
     const payload = JSON.parse(event.data);
     state.status = payload.status;
+    state.recording = payload.recording;
+    state.fft = payload.fft;
 
     if (Array.isArray(payload.samples) && payload.samples.length > 0) {
       state.samples.push(...payload.samples);
@@ -47,6 +67,7 @@ function connect() {
     }
 
     updateMetrics();
+    updateRecording();
   });
 
   socket.addEventListener("close", () => {
@@ -58,6 +79,20 @@ function connect() {
     setConnection("Disconnected", "off");
     socket.close();
   });
+}
+
+function sendFftConfig() {
+  if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
+    return;
+  }
+
+  state.socket.send(
+    JSON.stringify({
+      type: "fft_config",
+      windowSeconds: Number(els.fftWindowSelect.value),
+      maxFrequencyHz: Number(els.fftRangeSelect.value),
+    })
+  );
 }
 
 function scheduleReconnect() {
@@ -89,13 +124,125 @@ function updateMetrics() {
   }
 
   els.portText.textContent = `${status.port} @ ${status.baudRate}`;
-  els.sampleCount.textContent = formatInteger(status.totalSamples);
   els.rateValue.textContent = `${status.sampleRate.toFixed(0)} Hz`;
   els.errorText.textContent = status.latestError || "";
 
   if (status.latest) {
     els.voltageValue.textContent = `${status.latest.voltage.toFixed(3)} V`;
     els.adcValue.textContent = String(status.latest.adc);
+  }
+}
+
+async function postJson(url, payload = {}) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.detail || `Request failed: ${response.status}`);
+  }
+  return data;
+}
+
+async function startRecording() {
+  const folderName = els.recordName.value.trim();
+  const durationSeconds = Number.parseFloat(els.recordDuration.value);
+  const smooth = els.smoothToggle.checked;
+  const showRaw = els.rawToggle.checked;
+
+  setRecordMessage("");
+
+  if (!folderName) {
+    setRecordMessage("Enter an experiment folder name.", true);
+    return;
+  }
+
+  if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
+    setRecordMessage("Enter a valid recording duration.", true);
+    return;
+  }
+
+  if (!smooth && !showRaw) {
+    setRecordMessage("Enable Raw or Smooth before recording.", true);
+    return;
+  }
+
+  els.startRecord.disabled = true;
+  setRecordMessage("Starting recording...");
+  try {
+    state.recording = await postJson("/api/recording/start", {
+      folderName,
+      durationSeconds,
+      smooth,
+      showRaw,
+      smoothWindow: getSmoothWindow(),
+    });
+    updateRecording();
+  } catch (error) {
+    setRecordMessage(error.message, true);
+    updateRecording();
+  }
+}
+
+async function stopRecording() {
+  els.stopRecord.disabled = true;
+  setRecordMessage("Stopping and saving...");
+
+  try {
+    state.recording = await postJson("/api/recording/stop", {});
+    updateRecording();
+  } catch (error) {
+    setRecordMessage(error.message, true);
+    updateRecording();
+  }
+}
+
+function setRecordMessage(message, isError = false) {
+  els.recordMessage.textContent = message;
+  els.recordMessage.classList.toggle("error", isError);
+}
+
+function updateRecording() {
+  const recording = state.recording;
+  if (!recording) {
+    return;
+  }
+
+  const active = Boolean(recording.active);
+  const saving = Boolean(recording.saving);
+  const completed = Boolean(recording.completed);
+  const busy = active || saving;
+  const duration = Number(recording.durationSeconds || 0);
+  const elapsed = Number(recording.elapsedSeconds || 0);
+
+  els.recordState.textContent = saving ? "Saving" : active ? "Recording" : completed ? "Completed" : "Idle";
+  els.recordPill.textContent = els.recordState.textContent;
+  els.recordPill.classList.toggle("recording", active);
+  els.recordPill.classList.toggle("saving", saving);
+  els.recordElapsed.textContent = `${elapsed.toFixed(1)} / ${duration.toFixed(1)} s`;
+  els.recordSamples.textContent = formatInteger(recording.sampleCount);
+  els.recordOutput.textContent = recording.outputDir || "--";
+  els.startRecord.disabled = busy;
+  els.stopRecord.disabled = !active;
+
+  els.recordName.disabled = busy;
+  els.recordDuration.disabled = busy;
+  els.smoothWindow.disabled = busy;
+  els.rawToggle.disabled = busy;
+  els.smoothToggle.disabled = busy;
+
+  if (recording.error) {
+    setRecordMessage(recording.error, true);
+  } else if (saving) {
+    setRecordMessage("Saving CSV and plot files...");
+  } else if (active) {
+    setRecordMessage(`Writing ${recording.csvPath || "raw CSV"}...`);
+  } else if (completed && recording.result) {
+    const outputs = [recording.result.csvPath, recording.result.smoothCsvPath, recording.result.pngPath].filter(Boolean);
+    setRecordMessage(`Saved: ${outputs.join(", ")}`);
   }
 }
 
@@ -161,6 +308,21 @@ function resizeCanvas() {
   return rect;
 }
 
+function resizeFftCanvas() {
+  const rect = els.fftCanvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(1, Math.floor(rect.width * dpr));
+  const height = Math.max(1, Math.floor(rect.height * dpr));
+
+  if (els.fftCanvas.width !== width || els.fftCanvas.height !== height) {
+    els.fftCanvas.width = width;
+    els.fftCanvas.height = height;
+  }
+
+  fftCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return rect;
+}
+
 function draw() {
   const rect = resizeCanvas();
   const width = rect.width;
@@ -173,6 +335,7 @@ function draw() {
 
   if (!showRaw && !showSmooth) {
     els.message.textContent = "Enable Raw or Smooth";
+    drawFft();
     requestAnimationFrame(draw);
     return;
   }
@@ -180,6 +343,7 @@ function draw() {
   if (samples.length < 2) {
     els.message.textContent = "Waiting for samples";
     drawFrame(width, height, 0, 1, 0, getWindowSeconds());
+    drawFft();
     requestAnimationFrame(draw);
     return;
   }
@@ -218,7 +382,126 @@ function draw() {
   }
 
   drawLegend(showRaw, showSmooth, plot);
+  drawFft();
   requestAnimationFrame(draw);
+}
+
+function drawFft() {
+  const rect = resizeFftCanvas();
+  const width = rect.width;
+  const height = rect.height;
+  fftCtx.clearRect(0, 0, width, height);
+
+  const fft = state.fft;
+  if (!fft) {
+    els.fftMessage.textContent = "Waiting for FFT data";
+    drawSpectrumFrame(width, height, 0, 1, 0, 1);
+    return;
+  }
+
+  els.fftRateText.textContent = fft.sampleRateHz ? `Sample Rate: ${Number(fft.sampleRateHz).toFixed(1)} Hz` : "Sample Rate: --";
+
+  if (!fft.ready || !Array.isArray(fft.frequencyHz) || fft.frequencyHz.length < 2) {
+    els.fftMessage.textContent = fft.message || "Waiting for FFT data";
+    drawSpectrumFrame(width, height, 0, 1, 0, Number(fft.maxFrequencyHz || 1));
+    return;
+  }
+
+  els.fftMessage.textContent = "";
+
+  const frequencies = fft.frequencyHz;
+  const amplitudes = fft.amplitudeV;
+  const maxFrequency = Number(fft.maxFrequencyHz || frequencies.at(-1) || 1);
+  const yRange = paddedRange(amplitudes);
+  const padding = { left: 72, right: 20, top: 18, bottom: 42 };
+  const plot = {
+    x: padding.left,
+    y: padding.top,
+    width: width - padding.left - padding.right,
+    height: height - padding.top - padding.bottom,
+  };
+
+  drawSpectrumFrame(width, height, yRange.min, yRange.max, 0, maxFrequency, plot);
+  drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency);
+}
+
+function drawSpectrumFrame(width, height, yMin, yMax, xMin, xMax, plotOverride) {
+  const plot =
+    plotOverride ||
+    {
+      x: 72,
+      y: 18,
+      width: width - 92,
+      height: height - 60,
+    };
+
+  fftCtx.save();
+  fftCtx.fillStyle = "#ffffff";
+  fftCtx.fillRect(0, 0, width, height);
+
+  fftCtx.strokeStyle = "#e8edf4";
+  fftCtx.lineWidth = 1;
+  fftCtx.font = "12px system-ui, sans-serif";
+  fftCtx.fillStyle = "#697386";
+
+  const yTicks = 4;
+  for (let i = 0; i <= yTicks; i += 1) {
+    const t = i / yTicks;
+    const y = plot.y + plot.height * t;
+    const value = yMax - (yMax - yMin) * t;
+
+    fftCtx.beginPath();
+    fftCtx.moveTo(plot.x, y);
+    fftCtx.lineTo(plot.x + plot.width, y);
+    fftCtx.stroke();
+    fftCtx.fillText(`${value.toFixed(4)} V`, 10, y + 4);
+  }
+
+  const xTicks = 5;
+  for (let i = 0; i <= xTicks; i += 1) {
+    const t = i / xTicks;
+    const x = plot.x + plot.width * t;
+    const value = xMin + (xMax - xMin) * t;
+
+    fftCtx.beginPath();
+    fftCtx.moveTo(x, plot.y);
+    fftCtx.lineTo(x, plot.y + plot.height);
+    fftCtx.stroke();
+    fftCtx.fillText(`${value.toFixed(2)}Hz`, x - 18, plot.y + plot.height + 24);
+  }
+
+  fftCtx.strokeStyle = "#d8dee9";
+  fftCtx.strokeRect(plot.x, plot.y, plot.width, plot.height);
+  fftCtx.restore();
+}
+
+function drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency) {
+  if (frequencies.length < 2 || amplitudes.length < 2) {
+    return;
+  }
+
+  const ySpan = yRange.max - yRange.min;
+
+  fftCtx.save();
+  fftCtx.strokeStyle = "#7c3aed";
+  fftCtx.lineWidth = 1.6;
+  fftCtx.lineJoin = "round";
+  fftCtx.lineCap = "round";
+  fftCtx.beginPath();
+
+  for (let i = 0; i < frequencies.length; i += 1) {
+    const x = plot.x + (frequencies[i] / maxFrequency) * plot.width;
+    const y = plot.y + plot.height - ((amplitudes[i] - yRange.min) / ySpan) * plot.height;
+
+    if (i === 0) {
+      fftCtx.moveTo(x, y);
+    } else {
+      fftCtx.lineTo(x, y);
+    }
+  }
+
+  fftCtx.stroke();
+  fftCtx.restore();
 }
 
 function paddedRange(values) {
@@ -348,6 +631,13 @@ function drawLegend(showRaw, showSmooth, plot) {
   ctx.restore();
 }
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+  resizeCanvas();
+  resizeFftCanvas();
+});
+els.startRecord.addEventListener("click", startRecording);
+els.stopRecord.addEventListener("click", stopRecording);
+els.fftWindowSelect.addEventListener("change", sendFftConfig);
+els.fftRangeSelect.addEventListener("change", sendFftConfig);
 connect();
 requestAnimationFrame(draw);

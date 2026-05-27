@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "nocon",
+  "createdAt": "2026-05-27T17:00:57",
+  "durationSeconds": 600.0,
+  "sampleCount": 119032,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 3.0,
+  "files": {
+    "rawCsv": "Data\\nocon\\nocon.csv",
+    "smoothCsv": "Data\\nocon\\nocon_smooth.csv",
+    "plot": "Data\\nocon\\nocon.png",
+    "fftCsv": "Data\\nocon\\nocon_fft.csv",
+    "fftPlot": "Data\\nocon\\nocon_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-27T17:00:57",
+    "sampleCount": 119032,
+    "csvPath": "Data\\nocon\\nocon.csv",
+    "smoothCsvPath": "Data\\nocon\\nocon_smooth.csv",
+    "pngPath": "Data\\nocon\\nocon.png",
+    "fftCsvPath": "Data\\nocon\\nocon_fft.csv",
+    "fftPngPath": "Data\\nocon\\nocon_fft.png",
+    "fftMaxFrequencyHz": 3.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21873038666817,
+    "fftNyquistHz": 99.60936519333409,
+    "fftSampleIntervalS": 0.005019608337323891,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1792
+  }
+}

@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>P21XXCSR-EVB Capacitor Voltage Live Monitor</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css?v=fft-config-20260527" />
 </head>
 
 <body>
@@ -57,10 +57,57 @@
         <span class="metric-label">Sample Rate</span>
         <strong id="rateValue">--</strong>
       </div>
-      <div class="metric">
-        <span class="metric-label">Samples</span>
-        <strong id="sampleCount">0</strong>
+    </section>
+
+    <section class="recording-panel" aria-label="Recording controls">
+      <div class="recording-header">
+        <div>
+          <span class="section-eyebrow">Experiment Recording</span>
+          <h2>Capture live voltage data</h2>
+        </div>
+        <span id="recordPill" class="record-pill">Idle</span>
       </div>
+
+      <div class="recording-body">
+        <div class="recording-config">
+          <label class="recording-field">
+            <span>Experiment Folder</span>
+            <input id="recordName" type="text" placeholder="e.g. bili3min" autocomplete="off" />
+          </label>
+          <label class="recording-field duration-field">
+            <span>Duration</span>
+            <div class="duration-input">
+              <input id="recordDuration" type="number" min="1" step="1" value="180" />
+              <em>s</em>
+            </div>
+          </label>
+          <div class="recording-actions">
+            <button id="startRecord" type="button">Start Recording</button>
+            <button id="stopRecord" type="button" disabled>Stop</button>
+          </div>
+        </div>
+
+        <div class="recording-status">
+          <div class="record-stat">
+            <span class="status-label">State</span>
+            <strong id="recordState">Idle</strong>
+          </div>
+          <div class="record-stat">
+            <span class="status-label">Elapsed</span>
+            <strong id="recordElapsed">0.0 / 0.0 s</strong>
+          </div>
+          <div class="record-stat">
+            <span class="status-label">Recorded Samples</span>
+            <strong id="recordSamples">0</strong>
+          </div>
+          <div class="record-stat output-stat">
+            <span class="status-label">Output</span>
+            <strong id="recordOutput">--</strong>
+          </div>
+        </div>
+      </div>
+
+      <div id="recordMessage" class="record-message"></div>
     </section>
 
     <section class="chart-panel">
@@ -68,12 +115,47 @@
       <div id="chartMessage" class="chart-message">Waiting for samples</div>
     </section>
 
+    <section class="spectrum-panel" aria-label="Frequency spectrum">
+      <div class="spectrum-header">
+        <div>
+          <span class="section-eyebrow">Frequency Spectrum</span>
+          <h2>Real-time FFT</h2>
+        </div>
+        <div class="spectrum-meta">
+          <label>
+            <span>Window</span>
+            <select id="fftWindowSelect">
+              <option value="30">30 s</option>
+              <option value="60" selected>60 s</option>
+              <option value="120">120 s</option>
+              <option value="180">180 s</option>
+            </select>
+          </label>
+          <label>
+            <span>Range</span>
+            <select id="fftRangeSelect">
+              <option value="0.5">0-0.5 Hz</option>
+              <option value="1" selected>0-1 Hz</option>
+              <option value="5">0-5 Hz</option>
+              <option value="10">0-10 Hz</option>
+              <option value="100">0-100 Hz</option>
+            </select>
+          </label>
+          <span id="fftRateText">Sample Rate: --</span>
+        </div>
+      </div>
+      <div class="spectrum-canvas-wrap">
+        <canvas id="fftCanvas"></canvas>
+        <div id="fftMessage" class="chart-message">Waiting for FFT data</div>
+      </div>
+    </section>
+
     <footer class="footer">
       <span id="errorText"></span>
     </footer>
   </main>
 
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=fft-config-20260527"></script>
 </body>
 
 </html>

@@ -10,6 +10,7 @@ This project records and monitors VCAP voltage samples from an Arduino UNO.
 4. Recorded data is saved under `Data/<name>/`.
 5. `DataVisualization.py` generates voltage-time plots from recorded CSV files.
 6. `LiveServer.py` streams serial data to a local web page for live monitoring.
+7. The live web monitor can record experiments and save raw CSV, optional smoothed CSV, PNG plot, and metadata.
 
 ## Files
 
@@ -44,6 +45,8 @@ Computer-side recording script.
 - Saves the CSV file to `Data/<name>/<name>.csv`.
 - Calls `DataVisualization.py` after recording.
 - Saves the plot to `Data/<name>/<name>.png`.
+- Runs offline FFT analysis after recording.
+- Saves FFT data and plot to `Data/<name>/<name>_fft.csv` and `Data/<name>/<name>_fft.png`.
 
 Run:
 
@@ -60,7 +63,10 @@ Local web live monitor.
 - Reads the same CSV-formatted serial data as `ArduinoSerial.py`.
 - Streams live samples to the browser through WebSocket.
 - Serves an English web interface from `web/`.
-- Does not save CSV files in this first prototype.
+- Records experiments from the web page without opening a second serial connection.
+- Computes a real-time FFT spectrum using demean + Hann preprocessing; the browser can adjust FFT window length and frequency range.
+- Runs offline FFT analysis after recording from the completed time-domain CSV.
+- Saves outputs to `Data/<experiment_folder>/`.
 
 Run:
 
@@ -91,7 +97,40 @@ Browser UI for the live monitor.
 
 - `index.html`: page structure.
 - `style.css`: layout and visual style.
-- `app.js`: WebSocket client and live Canvas chart.
+- `app.js`: WebSocket client, live time-domain Canvas chart, and live FFT Canvas chart.
+- Recording controls: experiment folder, duration, start/stop, progress, and output paths.
+
+Web recording output:
+
+```text
+Data/<experiment_folder>/
+  <experiment_folder>.csv
+  <experiment_folder>_smooth.csv    # only when Smooth is enabled
+  <experiment_folder>.png
+  <experiment_folder>_fft.csv
+  <experiment_folder>_fft.png
+  <experiment_folder>_meta.json
+```
+
+Raw CSV columns:
+
+```csv
+Time(ms),PCElapsed(ms),ADC,Voltage(V)
+```
+
+Smoothed CSV columns:
+
+```csv
+Time(ms),PCElapsed(ms),ADC,Voltage(V),SmoothedVoltage(V)
+```
+
+Offline FFT CSV columns:
+
+```csv
+Frequency(Hz),Amplitude(V)
+```
+
+The real-time FFT in the browser is for live monitoring. The saved FFT files are generated after recording finishes, using the completed raw CSV and demean + Hann preprocessing.
 
 ### `DataVisualization.py`
 

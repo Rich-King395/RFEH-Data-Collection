@@ -1,0 +1,37 @@
+{
+  "status": "completed",
+  "folderName": "codex_api_probe_20260527",
+  "createdAt": "2026-05-27T14:37:52",
+  "durationSeconds": 1.0,
+  "sampleCount": 198,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "files": {
+    "rawCsv": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527.csv",
+    "smoothCsv": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527_smooth.csv",
+    "plot": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527.png"
+  },
+  "error": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-27T14:37:52",
+    "sampleCount": 198,
+    "csvPath": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527.csv",
+    "smoothCsvPath": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527_smooth.csv",
+    "pngPath": "Data\\codex_api_probe_20260527\\codex_api_probe_20260527.png"
+  }
+}

@@ -121,7 +121,7 @@ input[type="number"] {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -150,6 +150,202 @@ input[type="number"] {
   font-weight: 720;
 }
 
+.recording-panel {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.recording-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.section-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 720;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.record-pill {
+  min-width: 96px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #f8fafc;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.record-pill.recording {
+  border-color: rgba(15, 159, 110, 0.35);
+  background: rgba(15, 159, 110, 0.1);
+  color: var(--green);
+}
+
+.record-pill.saving {
+  border-color: rgba(183, 121, 31, 0.35);
+  background: rgba(183, 121, 31, 0.1);
+  color: var(--yellow);
+}
+
+.recording-body {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.4fr);
+  gap: 14px;
+}
+
+.recording-config,
+.recording-status {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.recording-config {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.recording-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.recording-field span,
+.status-label {
+  color: var(--muted);
+}
+
+.recording-field input {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-input input {
+  width: 120px;
+}
+
+.duration-input em {
+  color: var(--muted);
+  font-style: normal;
+}
+
+.recording-actions {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+#stopRecord {
+  background: #ffffff;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.recording-status {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.record-stat {
+  min-height: 66px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.record-stat.output-stat {
+  grid-column: 1 / -1;
+}
+
+.status-label {
+  display: block;
+  font-size: 12px;
+}
+
+.recording-status strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 16px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.record-message {
+  min-height: 20px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.record-message:empty {
+  display: none;
+}
+
+.record-message.error {
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--red);
+}
+
 .chart-panel {
   position: relative;
   height: min(62vh, 620px);
@@ -162,6 +358,74 @@ input[type="number"] {
 }
 
 #chartCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.spectrum-panel {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.spectrum-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.spectrum-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.spectrum-meta > span,
+.spectrum-meta label {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfe;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.spectrum-meta label span {
+  color: var(--muted);
+}
+
+.spectrum-meta select {
+  height: 28px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.spectrum-canvas-wrap {
+  position: relative;
+  height: 320px;
+  min-height: 260px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+#fftCanvas {
   width: 100%;
   height: 100%;
   display: block;
@@ -209,9 +473,30 @@ input[type="number"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .recording-body {
+    grid-template-columns: 1fr;
+  }
+
+  .recording-status {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .record-stat.output-stat {
+    grid-column: 1 / -1;
+  }
+
   .chart-panel {
     height: 56vh;
     min-height: 320px;
+  }
+
+  .spectrum-header {
+    display: block;
+  }
+
+  .spectrum-meta {
+    justify-content: flex-start;
+    margin-top: 10px;
   }
 }
 
@@ -222,5 +507,22 @@ input[type="number"] {
 
   .metric {
     min-height: 70px;
+  }
+
+  .recording-status {
+    grid-template-columns: 1fr;
+  }
+
+  .recording-header {
+    display: block;
+  }
+
+  .record-pill {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  .recording-actions {
+    grid-template-columns: 1fr;
   }
 }

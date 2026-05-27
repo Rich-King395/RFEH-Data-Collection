@@ -37,12 +37,17 @@ def ask_run_name() -> str:
             print(exc)
 
 
-def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None, int]:
+RECORDING_FFT_MAX_FREQUENCY_HZ = 3.0
+
+
+def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None, Path | None, Path | None, int]:
     run_dir = DATA_DIR / run_name
     run_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = run_dir / f"{run_name}.csv"
     png_path = run_dir / f"{run_name}.png"
+    fft_csv_path = run_dir / f"{run_name}_fft.csv"
+    fft_png_path = run_dir / f"{run_name}_fft.png"
 
     print(f"Opening serial port {SERIAL_PORT} at {BAUD_RATE} baud...")
 
@@ -103,7 +108,27 @@ def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None,
         print("CSV saved, but plotting dependencies are not installed. Run: pip install numpy matplotlib")
         png_path = None
 
-    return csv_path, png_path, sample_count
+    try:
+        from FrequencyAnalysis import analyze_voltage_fft
+
+        analyze_voltage_fft(
+            csv_path=csv_path,
+            output_csv_path=fft_csv_path,
+            output_png_path=fft_png_path,
+            max_frequency=RECORDING_FFT_MAX_FREQUENCY_HZ,
+        )
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"matplotlib", "numpy"}:
+            raise
+        print("CSV saved, but FFT dependencies are not installed. Run: pip install numpy matplotlib")
+        fft_csv_path = None
+        fft_png_path = None
+    except Exception as exc:
+        print(f"CSV saved, but FFT analysis was skipped: {exc}")
+        fft_csv_path = None
+        fft_png_path = None
+
+    return csv_path, png_path, fft_csv_path, fft_png_path, sample_count
 
 
 def main() -> None:
@@ -111,7 +136,7 @@ def main() -> None:
     run_name = ask_run_name()
 
     try:
-        csv_path, png_path, sample_count = record_samples(duration_s, run_name)
+        csv_path, png_path, fft_csv_path, fft_png_path, sample_count = record_samples(duration_s, run_name)
     except KeyboardInterrupt:
         print("\nRecording interrupted.")
         return
@@ -122,6 +147,10 @@ def main() -> None:
     print(f"Saved CSV: {csv_path}")
     if png_path:
         print(f"Saved plot: {png_path}")
+    if fft_csv_path:
+        print(f"Saved FFT CSV: {fft_csv_path}")
+    if fft_png_path:
+        print(f"Saved FFT plot: {fft_png_path}")
     print(f"Samples: {sample_count}")
 
 
