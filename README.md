@@ -144,14 +144,12 @@ CSV plotting utility.
 Run directly:
 
 ```powershell
-conda activate UBSS
 python DataVisualization.py Data\TEST\TEST.csv
 ```
 
 ## Python Dependencies
 
 ```powershell
-conda activate UBSS
 pip install -r requirements.txt
 ```
 
