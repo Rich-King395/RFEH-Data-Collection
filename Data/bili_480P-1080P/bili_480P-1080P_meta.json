@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "bili_480P-1080P",
+  "createdAt": "2026-05-27T19:43:44",
+  "durationSeconds": 600.0,
+  "sampleCount": 119035,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 3.0,
+  "files": {
+    "rawCsv": "Data\\bili_480P-1080P\\bili_480P-1080P.csv",
+    "smoothCsv": "Data\\bili_480P-1080P\\bili_480P-1080P_smooth.csv",
+    "plot": "Data\\bili_480P-1080P\\bili_480P-1080P.png",
+    "fftCsv": "Data\\bili_480P-1080P\\bili_480P-1080P_fft.csv",
+    "fftPlot": "Data\\bili_480P-1080P\\bili_480P-1080P_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-27T19:43:44",
+    "sampleCount": 119035,
+    "csvPath": "Data\\bili_480P-1080P\\bili_480P-1080P.csv",
+    "smoothCsvPath": "Data\\bili_480P-1080P\\bili_480P-1080P_smooth.csv",
+    "pngPath": "Data\\bili_480P-1080P\\bili_480P-1080P.png",
+    "fftCsvPath": "Data\\bili_480P-1080P\\bili_480P-1080P_fft.csv",
+    "fftPngPath": "Data\\bili_480P-1080P\\bili_480P-1080P_fft.png",
+    "fftMaxFrequencyHz": 3.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21875000000003,
+    "fftNyquistHz": 99.60937500000001,
+    "fftSampleIntervalS": 0.005019607843137254,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1792
+  }
+}

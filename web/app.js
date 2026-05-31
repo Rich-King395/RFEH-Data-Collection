@@ -1,13 +1,14 @@
 const state = {
-  samples: [],
+  channels: {},
+  primaryChannelId: null,
+  activeChannelId: null,
+  channelRenderKey: "",
   maxSamples: 150000,
-  connected: false,
-  status: null,
-  recording: null,
-  fft: null,
   socket: null,
   reconnectTimer: null,
 };
+
+const CHANNEL_COLORS = ["#2563eb", "#dc2626", "#059669", "#7c3aed", "#d97706", "#0891b2", "#be185d", "#4f46e5"];
 
 const els = {
   canvas: document.getElementById("chartCanvas"),
@@ -17,6 +18,9 @@ const els = {
   fftWindowSelect: document.getElementById("fftWindowSelect"),
   fftRangeSelect: document.getElementById("fftRangeSelect"),
   fftRateText: document.getElementById("fftRateText"),
+  channelSelect: document.getElementById("channelSelect"),
+  displayChannelList: document.getElementById("displayChannelList"),
+  channelList: document.getElementById("channelList"),
   connectionDot: document.getElementById("connectionDot"),
   connectionText: document.getElementById("connectionText"),
   portText: document.getElementById("portText"),
@@ -30,6 +34,7 @@ const els = {
   smoothWindow: document.getElementById("smoothWindow"),
   recordName: document.getElementById("recordName"),
   recordDuration: document.getElementById("recordDuration"),
+  recordFftRange: document.getElementById("recordFftRange"),
   startRecord: document.getElementById("startRecord"),
   stopRecord: document.getElementById("stopRecord"),
   recordState: document.getElementById("recordState"),
@@ -55,16 +60,7 @@ function connect() {
 
   socket.addEventListener("message", (event) => {
     const payload = JSON.parse(event.data);
-    state.status = payload.status;
-    state.recording = payload.recording;
-    state.fft = payload.fft;
-
-    if (Array.isArray(payload.samples) && payload.samples.length > 0) {
-      state.samples.push(...payload.samples);
-      if (state.samples.length > state.maxSamples) {
-        state.samples.splice(0, state.samples.length - state.maxSamples);
-      }
-    }
+    applyChannelPayload(payload);
 
     updateMetrics();
     updateRecording();
@@ -81,6 +77,186 @@ function connect() {
   });
 }
 
+function applyChannelPayload(payload) {
+  if (!payload.channels) {
+    const channelId = state.primaryChannelId || state.activeChannelId || "primary";
+    state.primaryChannelId = state.primaryChannelId || channelId;
+    state.activeChannelId = state.activeChannelId || channelId;
+    upsertChannel(channelId, {
+      id: channelId,
+      port: payload.status?.port || channelId,
+      baudRate: payload.status?.baudRate,
+      status: payload.status,
+      recording: payload.recording,
+      fft: payload.fft,
+      samples: payload.samples,
+    });
+    updateChannelControls();
+    return;
+  }
+
+  state.primaryChannelId = payload.primaryChannelId || state.primaryChannelId || Object.keys(payload.channels)[0] || null;
+  state.activeChannelId = state.activeChannelId || state.primaryChannelId;
+
+  for (const [channelId, channelPayload] of Object.entries(payload.channels)) {
+    upsertChannel(channelId, channelPayload);
+  }
+
+  if (!state.channels[state.activeChannelId]) {
+    state.activeChannelId = state.primaryChannelId;
+  }
+
+  updateChannelControls();
+}
+
+function upsertChannel(channelId, channelPayload) {
+  const existing = state.channels[channelId] || { samples: [] };
+  state.channels[channelId] = {
+    ...existing,
+    id: channelPayload.id || channelId,
+    port: channelPayload.port || channelPayload.status?.port || channelId,
+    baudRate: channelPayload.baudRate || channelPayload.status?.baudRate,
+    status: channelPayload.status,
+    recording: channelPayload.recording,
+    fft: channelPayload.fft,
+  };
+  appendSamples(state.channels[channelId].samples, channelPayload.samples);
+}
+
+function appendSamples(target, samples) {
+  if (!Array.isArray(samples) || samples.length === 0) {
+    return;
+  }
+
+  target.push(...samples);
+  if (target.length > state.maxSamples) {
+    target.splice(0, target.length - state.maxSamples);
+  }
+}
+
+function getActiveChannelId() {
+  return state.activeChannelId || state.primaryChannelId || Object.keys(state.channels)[0] || null;
+}
+
+function getActiveChannel() {
+  const channelId = getActiveChannelId();
+  return channelId ? state.channels[channelId] || null : null;
+}
+
+function setActiveChannel(channelId) {
+  if (!state.channels[channelId]) {
+    return;
+  }
+  state.activeChannelId = channelId;
+  updateMetrics();
+  updateRecording();
+  sendFftConfig();
+}
+
+function getChannelIds() {
+  return Object.keys(state.channels);
+}
+
+function updateChannelControls() {
+  const channelIds = getChannelIds();
+  if (channelIds.length === 0) {
+    return;
+  }
+
+  const activeChannelId = getActiveChannelId();
+  const renderKey = channelIds.map((channelId) => `${channelId}:${Boolean(state.channels[channelId]?.status?.connected)}`).join("|");
+  if (renderKey === state.channelRenderKey) {
+    els.channelSelect.value = activeChannelId;
+    return;
+  }
+
+  state.channelRenderKey = renderKey;
+  const existingActive = els.channelSelect.value;
+  const selectedDisplayChannels = getSelectedDisplayChannelIds({ fallbackToActive: false });
+  const selectedRecordChannels = getSelectedRecordChannelIds({ fallbackToActive: false });
+
+  els.channelSelect.innerHTML = "";
+  for (const channelId of channelIds) {
+    const channel = state.channels[channelId];
+    const option = document.createElement("option");
+    option.value = channelId;
+    option.textContent = `${channelId}${channel?.status?.connected ? "" : " (offline)"}`;
+    els.channelSelect.appendChild(option);
+  }
+  els.channelSelect.value = state.channels[existingActive] ? existingActive : activeChannelId;
+
+  els.displayChannelList.innerHTML = "";
+  for (const channelId of channelIds) {
+    const channel = state.channels[channelId];
+    const label = document.createElement("label");
+    label.className = "channel-choice";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = channelId;
+    input.checked =
+      selectedDisplayChannels.length > 0
+        ? selectedDisplayChannels.includes(channelId)
+        : Boolean(channel?.status?.connected) || channelId === activeChannelId;
+
+    const swatch = document.createElement("i");
+    swatch.style.background = getChannelColor(channelId);
+
+    const text = document.createElement("span");
+    text.textContent = `${channelId} ${channel?.status?.connected ? "Connected" : "Offline"}`;
+
+    label.append(input, swatch, text);
+    els.displayChannelList.appendChild(label);
+  }
+
+  els.channelList.innerHTML = "";
+  for (const channelId of channelIds) {
+    const channel = state.channels[channelId];
+    const label = document.createElement("label");
+    label.className = "channel-choice";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = channelId;
+    input.checked = selectedRecordChannels.length > 0 ? selectedRecordChannels.includes(channelId) : channelId === activeChannelId;
+
+    const text = document.createElement("span");
+    text.textContent = `${channelId} ${channel?.status?.connected ? "Connected" : "Offline"}`;
+
+    const swatch = document.createElement("i");
+    swatch.style.background = getChannelColor(channelId);
+
+    label.append(input, swatch, text);
+    els.channelList.appendChild(label);
+  }
+}
+
+function getSelectedDisplayChannelIds(options = {}) {
+  const selected = Array.from(els.displayChannelList.querySelectorAll("input[type='checkbox']:checked")).map(
+    (input) => input.value
+  );
+  if (selected.length > 0 || options.fallbackToActive === false) {
+    return selected;
+  }
+
+  const connected = getChannelIds().filter((channelId) => state.channels[channelId]?.status?.connected);
+  if (connected.length > 0) {
+    return connected;
+  }
+
+  const activeChannelId = getActiveChannelId();
+  return activeChannelId ? [activeChannelId] : [];
+}
+
+function getSelectedRecordChannelIds(options = {}) {
+  const selected = Array.from(els.channelList.querySelectorAll("input[type='checkbox']:checked")).map((input) => input.value);
+  if (selected.length > 0 || options.fallbackToActive === false) {
+    return selected;
+  }
+  const activeChannelId = getActiveChannelId();
+  return activeChannelId ? [activeChannelId] : [];
+}
+
 function sendFftConfig() {
   if (!state.socket || state.socket.readyState !== WebSocket.OPEN) {
     return;
@@ -88,11 +264,16 @@ function sendFftConfig() {
 
   state.socket.send(
     JSON.stringify({
-      type: "fft_config",
+      type: "fft_config_all",
       windowSeconds: Number(els.fftWindowSelect.value),
       maxFrequencyHz: Number(els.fftRangeSelect.value),
     })
   );
+}
+
+function getChannelColor(channelId) {
+  const index = Math.max(0, getChannelIds().indexOf(channelId));
+  return CHANNEL_COLORS[index % CHANNEL_COLORS.length];
 }
 
 function scheduleReconnect() {
@@ -112,7 +293,8 @@ function setConnection(label, mode) {
 }
 
 function updateMetrics() {
-  const status = state.status;
+  const channel = getActiveChannel();
+  const status = channel?.status;
   if (!status) {
     return;
   }
@@ -152,6 +334,7 @@ async function startRecording() {
   const durationSeconds = Number.parseFloat(els.recordDuration.value);
   const smooth = els.smoothToggle.checked;
   const showRaw = els.rawToggle.checked;
+  const channelIds = getSelectedRecordChannelIds();
 
   setRecordMessage("");
 
@@ -170,16 +353,30 @@ async function startRecording() {
     return;
   }
 
+  if (channelIds.length === 0) {
+    setRecordMessage("Select at least one recording channel.", true);
+    return;
+  }
+
+  if (!channelIds.includes(getActiveChannelId())) {
+    state.activeChannelId = channelIds[0];
+    els.channelSelect.value = channelIds[0];
+  }
+
   els.startRecord.disabled = true;
-  setRecordMessage("Starting recording...");
+  setRecordMessage(channelIds.length > 1 ? "Starting synchronized recordings..." : "Starting recording...");
   try {
-    state.recording = await postJson("/api/recording/start", {
+    const recording = await postJson("/api/recording/start", {
+      channelId: getActiveChannelId(),
+      channelIds,
       folderName,
       durationSeconds,
       smooth,
       showRaw,
       smoothWindow: getSmoothWindow(),
+      offlineFftMaxFrequencyHz: getOfflineFftMaxFrequency(),
     });
+    updateRecordingResponse(recording);
     updateRecording();
   } catch (error) {
     setRecordMessage(error.message, true);
@@ -190,13 +387,43 @@ async function startRecording() {
 async function stopRecording() {
   els.stopRecord.disabled = true;
   setRecordMessage("Stopping and saving...");
+  const channelIds = getSelectedRecordChannelIds();
 
   try {
-    state.recording = await postJson("/api/recording/stop", {});
+    const recording = await postJson("/api/recording/stop", {
+      channelId: getActiveChannelId(),
+      channelIds,
+    });
+    updateRecordingResponse(recording);
     updateRecording();
   } catch (error) {
     setRecordMessage(error.message, true);
     updateRecording();
+  }
+}
+
+function updateRecordingResponse(response) {
+  if (response?.multi && response.channels) {
+    for (const [channelId, recording] of Object.entries(response.channels)) {
+      if (state.channels[channelId]) {
+        state.channels[channelId].recording = recording;
+      }
+    }
+    return;
+  }
+
+  if (response?.channelId && state.channels[response.channelId]) {
+    state.channels[response.channelId].recording = response.recording;
+    return;
+  }
+
+  updateActiveChannelRecording(response?.recording || response);
+}
+
+function updateActiveChannelRecording(recording) {
+  const channel = getActiveChannel();
+  if (channel) {
+    channel.recording = recording;
   }
 }
 
@@ -206,7 +433,8 @@ function setRecordMessage(message, isError = false) {
 }
 
 function updateRecording() {
-  const recording = state.recording;
+  const channel = getActiveChannel();
+  const recording = channel?.recording;
   if (!recording) {
     return;
   }
@@ -230,6 +458,14 @@ function updateRecording() {
 
   els.recordName.disabled = busy;
   els.recordDuration.disabled = busy;
+  els.recordFftRange.disabled = busy;
+  els.channelSelect.disabled = busy;
+  for (const input of els.channelList.querySelectorAll("input")) {
+    input.disabled = busy;
+  }
+  for (const input of els.displayChannelList.querySelectorAll("input")) {
+    input.disabled = false;
+  }
   els.smoothWindow.disabled = busy;
   els.rawToggle.disabled = busy;
   els.smoothToggle.disabled = busy;
@@ -237,11 +473,17 @@ function updateRecording() {
   if (recording.error) {
     setRecordMessage(recording.error, true);
   } else if (saving) {
-    setRecordMessage("Saving CSV and plot files...");
+    setRecordMessage("Saving CSV, plot, and offline FFT files...");
   } else if (active) {
     setRecordMessage(`Writing ${recording.csvPath || "raw CSV"}...`);
   } else if (completed && recording.result) {
-    const outputs = [recording.result.csvPath, recording.result.smoothCsvPath, recording.result.pngPath].filter(Boolean);
+    const outputs = [
+      recording.result.csvPath,
+      recording.result.smoothCsvPath,
+      recording.result.pngPath,
+      recording.result.fftCsvPath,
+      recording.result.fftPngPath,
+    ].filter(Boolean);
     setRecordMessage(`Saved: ${outputs.join(", ")}`);
   }
 }
@@ -259,15 +501,45 @@ function getSmoothWindow() {
   return value % 2 === 0 ? value + 1 : value;
 }
 
-function visibleSamples() {
+function getOfflineFftMaxFrequency() {
+  const value = els.recordFftRange.value;
+  if (value === "full") {
+    return "full";
+  }
+  return Number.parseFloat(value);
+}
+
+function visibleSamplesForChannel(channel, startMs) {
+  const samples = channel?.samples || [];
+  return samples.filter((sample) => sample.pcTimeMs >= startMs);
+}
+
+function visibleChannelSeries() {
+  const channelIds = getSelectedDisplayChannelIds();
   const windowMs = getWindowSeconds() * 1000;
-  const latest = state.samples.at(-1);
-  if (!latest) {
+  const latestMs = Math.max(
+    ...channelIds.map((channelId) => state.channels[channelId]?.samples?.at(-1)?.pcTimeMs || Number.NEGATIVE_INFINITY)
+  );
+
+  if (!Number.isFinite(latestMs)) {
     return [];
   }
 
-  const cutoff = latest.pcTimeMs - windowMs;
-  return state.samples.filter((sample) => sample.pcTimeMs >= cutoff);
+  const startMs = latestMs - windowMs;
+  return channelIds
+    .map((channelId) => {
+      const channel = state.channels[channelId];
+      const samples = visibleSamplesForChannel(channel, startMs);
+      return {
+        id: channelId,
+        channel,
+        color: getChannelColor(channelId),
+        samples,
+        times: samples.map((sample) => (sample.pcTimeMs - startMs) / 1000),
+        voltages: samples.map((sample) => sample.voltage),
+      };
+    })
+    .filter((series) => series.samples.length >= 2);
 }
 
 function movingAverage(values, windowSize) {
@@ -329,7 +601,7 @@ function draw() {
   const height = rect.height;
   ctx.clearRect(0, 0, width, height);
 
-  const samples = visibleSamples();
+  const seriesList = visibleChannelSeries();
   const showRaw = els.rawToggle.checked;
   const showSmooth = els.smoothToggle.checked;
 
@@ -340,7 +612,7 @@ function draw() {
     return;
   }
 
-  if (samples.length < 2) {
+  if (seriesList.length === 0) {
     els.message.textContent = "Waiting for samples";
     drawFrame(width, height, 0, 1, 0, getWindowSeconds());
     drawFft();
@@ -358,30 +630,33 @@ function draw() {
     height: height - padding.top - padding.bottom,
   };
 
-  const latestMs = samples.at(-1).pcTimeMs;
-  const windowMs = getWindowSeconds() * 1000;
-  const startMs = latestMs - windowMs;
-  const times = samples.map((sample) => (sample.pcTimeMs - startMs) / 1000);
-  const voltages = samples.map((sample) => sample.voltage);
-  const smoothVoltages = showSmooth ? movingAverage(voltages, getSmoothWindow()) : [];
-
-  const plottedValues = showRaw ? voltages.slice() : [];
-  if (showSmooth) {
-    plottedValues.push(...smoothVoltages);
+  const plottedValues = [];
+  for (const series of seriesList) {
+    series.smoothVoltages = showSmooth ? movingAverage(series.voltages, getSmoothWindow()) : [];
+    if (showRaw) {
+      plottedValues.push(...series.voltages);
+    }
+    if (showSmooth) {
+      plottedValues.push(...series.smoothVoltages);
+    }
   }
 
   const yRange = paddedRange(plottedValues);
   drawFrame(width, height, yRange.min, yRange.max, 0, getWindowSeconds(), plot);
 
-  if (showRaw) {
-    drawLine(times, voltages, yRange, plot, "#2563eb", showSmooth ? 0.55 : 0.95, showSmooth ? 1.2 : 1.8);
+  const legendItems = [];
+  for (const series of seriesList) {
+    if (showRaw) {
+      drawLine(series.times, series.voltages, yRange, plot, series.color, showSmooth ? 0.3 : 0.95, showSmooth ? 1.1 : 1.8);
+      legendItems.push([`${series.id} Raw`, series.color, showSmooth ? 0.45 : 1]);
+    }
+    if (showSmooth) {
+      drawLine(series.times, series.smoothVoltages, yRange, plot, series.color, 1, 2.2);
+      legendItems.push([`${series.id} Smooth`, series.color, 1]);
+    }
   }
 
-  if (showSmooth) {
-    drawLine(times, smoothVoltages, yRange, plot, "#dc2626", 1, 2.2);
-  }
-
-  drawLegend(showRaw, showSmooth, plot);
+  drawLegendItems(ctx, legendItems, plot);
   drawFft();
   requestAnimationFrame(draw);
 }
@@ -392,27 +667,41 @@ function drawFft() {
   const height = rect.height;
   fftCtx.clearRect(0, 0, width, height);
 
-  const fft = state.fft;
-  if (!fft) {
+  const fftSeries = getSelectedDisplayChannelIds()
+    .map((channelId) => ({
+      id: channelId,
+      color: getChannelColor(channelId),
+      fft: state.channels[channelId]?.fft,
+    }))
+    .filter((series) => series.fft);
+
+  if (fftSeries.length === 0) {
     els.fftMessage.textContent = "Waiting for FFT data";
     drawSpectrumFrame(width, height, 0, 1, 0, 1);
     return;
   }
 
-  els.fftRateText.textContent = fft.sampleRateHz ? `Sample Rate: ${Number(fft.sampleRateHz).toFixed(1)} Hz` : "Sample Rate: --";
+  const activeFft = getActiveChannel()?.fft || fftSeries[0].fft;
+  els.fftRateText.textContent = activeFft.sampleRateHz
+    ? `Sample Rate: ${Number(activeFft.sampleRateHz).toFixed(1)} Hz`
+    : "Sample Rate: --";
 
-  if (!fft.ready || !Array.isArray(fft.frequencyHz) || fft.frequencyHz.length < 2) {
-    els.fftMessage.textContent = fft.message || "Waiting for FFT data";
-    drawSpectrumFrame(width, height, 0, 1, 0, Number(fft.maxFrequencyHz || 1));
+  const readySeries = fftSeries.filter(
+    (series) => series.fft.ready && Array.isArray(series.fft.frequencyHz) && series.fft.frequencyHz.length >= 2
+  );
+
+  if (readySeries.length === 0) {
+    els.fftMessage.textContent = activeFft.message || "Waiting for FFT data";
+    drawSpectrumFrame(width, height, 0, 1, 0, Number(activeFft.maxFrequencyHz || 1));
     return;
   }
 
   els.fftMessage.textContent = "";
 
-  const frequencies = fft.frequencyHz;
-  const amplitudes = fft.amplitudeV;
-  const maxFrequency = Number(fft.maxFrequencyHz || frequencies.at(-1) || 1);
-  const yRange = paddedRange(amplitudes);
+  const maxFrequency = Math.max(
+    ...readySeries.map((series) => Number(series.fft.maxFrequencyHz || series.fft.frequencyHz.at(-1) || 1))
+  );
+  const yRange = paddedRange(readySeries.flatMap((series) => series.fft.amplitudeV));
   const padding = { left: 72, right: 20, top: 18, bottom: 42 };
   const plot = {
     x: padding.left,
@@ -422,7 +711,12 @@ function drawFft() {
   };
 
   drawSpectrumFrame(width, height, yRange.min, yRange.max, 0, maxFrequency, plot);
-  drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency);
+  const legendItems = [];
+  for (const series of readySeries) {
+    drawSpectrumLine(series.fft.frequencyHz, series.fft.amplitudeV, yRange, plot, maxFrequency, series.color);
+    legendItems.push([`${series.id} FFT`, series.color, 1]);
+  }
+  drawLegendItems(fftCtx, legendItems, plot);
 }
 
 function drawSpectrumFrame(width, height, yMin, yMax, xMin, xMax, plotOverride) {
@@ -475,7 +769,7 @@ function drawSpectrumFrame(width, height, yMin, yMax, xMin, xMax, plotOverride) 
   fftCtx.restore();
 }
 
-function drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency) {
+function drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency, color = "#7c3aed") {
   if (frequencies.length < 2 || amplitudes.length < 2) {
     return;
   }
@@ -483,7 +777,7 @@ function drawSpectrumLine(frequencies, amplitudes, yRange, plot, maxFrequency) {
   const ySpan = yRange.max - yRange.min;
 
   fftCtx.save();
-  fftCtx.strokeStyle = "#7c3aed";
+  fftCtx.strokeStyle = color;
   fftCtx.lineWidth = 1.6;
   fftCtx.lineJoin = "round";
   fftCtx.lineCap = "round";
@@ -603,32 +897,33 @@ function drawLine(times, values, yRange, plot, color, alpha, lineWidth) {
   ctx.restore();
 }
 
-function drawLegend(showRaw, showSmooth, plot) {
-  const items = [];
-  if (showRaw) {
-    items.push(["Raw", "#2563eb"]);
-  }
-  if (showSmooth) {
-    items.push(["Smooth", "#dc2626"]);
+function drawLegendItems(canvasCtx, items, plot) {
+  if (!items.length) {
+    return;
   }
 
-  ctx.save();
-  ctx.font = "13px system-ui, sans-serif";
+  canvasCtx.save();
+  canvasCtx.font = "13px system-ui, sans-serif";
   let x = plot.x + 12;
   const y = plot.y + 18;
 
-  for (const [label, color] of items) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 22, y);
-    ctx.stroke();
-    ctx.fillStyle = "#18202f";
-    ctx.fillText(label, x + 30, y + 4);
-    x += label.length * 8 + 64;
+  for (const [label, color, alpha = 1] of items.slice(0, 10)) {
+    canvasCtx.globalAlpha = alpha;
+    canvasCtx.strokeStyle = color;
+    canvasCtx.lineWidth = 3;
+    canvasCtx.beginPath();
+    canvasCtx.moveTo(x, y);
+    canvasCtx.lineTo(x + 22, y);
+    canvasCtx.stroke();
+    canvasCtx.globalAlpha = 1;
+    canvasCtx.fillStyle = "#18202f";
+    canvasCtx.fillText(label, x + 30, y + 4);
+    x += Math.max(76, label.length * 7 + 58);
+    if (x > plot.x + plot.width - 120) {
+      break;
+    }
   }
-  ctx.restore();
+  canvasCtx.restore();
 }
 
 window.addEventListener("resize", () => {
@@ -637,6 +932,7 @@ window.addEventListener("resize", () => {
 });
 els.startRecord.addEventListener("click", startRecording);
 els.stopRecord.addEventListener("click", stopRecording);
+els.channelSelect.addEventListener("change", () => setActiveChannel(els.channelSelect.value));
 els.fftWindowSelect.addEventListener("change", sendFftConfig);
 els.fftRangeSelect.addEventListener("change", sendFftConfig);
 connect();

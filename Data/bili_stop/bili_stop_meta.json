@@ -1,0 +1,34 @@
+{
+  "status": "recording",
+  "folderName": "bili_stop",
+  "createdAt": "2026-05-27T20:07:23",
+  "durationSeconds": 600.0,
+  "sampleCount": 0,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 3.0,
+  "files": {
+    "rawCsv": "Data\\bili_stop\\bili_stop.csv",
+    "smoothCsv": "Data\\bili_stop\\bili_stop_smooth.csv",
+    "plot": "Data\\bili_stop\\bili_stop.png",
+    "fftCsv": "Data\\bili_stop\\bili_stop_fft.csv",
+    "fftPlot": "Data\\bili_stop\\bili_stop_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {}
+}

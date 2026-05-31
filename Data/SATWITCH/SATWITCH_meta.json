@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "SATWITCH",
+  "createdAt": "2026-05-29T20:17:20",
+  "durationSeconds": 600.0,
+  "sampleCount": 119547,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\SATWITCH\\SATWITCH.csv",
+    "smoothCsv": "Data\\SATWITCH\\SATWITCH_smooth.csv",
+    "plot": "Data\\SATWITCH\\SATWITCH.png",
+    "fftCsv": "Data\\SATWITCH\\SATWITCH_fft.csv",
+    "fftPlot": "Data\\SATWITCH\\SATWITCH_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-29T20:17:20",
+    "sampleCount": 119547,
+    "csvPath": "Data\\SATWITCH\\SATWITCH.csv",
+    "smoothCsvPath": "Data\\SATWITCH\\SATWITCH_smooth.csv",
+    "pngPath": "Data\\SATWITCH\\SATWITCH.png",
+    "fftCsvPath": "Data\\SATWITCH\\SATWITCH_fft.csv",
+    "fftPngPath": "Data\\SATWITCH\\SATWITCH_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21876301922762,
+    "fftNyquistHz": 99.60938150961381,
+    "fftSampleIntervalS": 0.005019607515098791,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 600
+  }
+}

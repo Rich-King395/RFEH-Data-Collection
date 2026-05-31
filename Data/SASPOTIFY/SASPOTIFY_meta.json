@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "SASPOTIFY",
+  "createdAt": "2026-05-29T20:32:00",
+  "durationSeconds": 600.0,
+  "sampleCount": 119534,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\SASPOTIFY\\SASPOTIFY.csv",
+    "smoothCsv": "Data\\SASPOTIFY\\SASPOTIFY_smooth.csv",
+    "plot": "Data\\SASPOTIFY\\SASPOTIFY.png",
+    "fftCsv": "Data\\SASPOTIFY\\SASPOTIFY_fft.csv",
+    "fftPlot": "Data\\SASPOTIFY\\SASPOTIFY_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-29T20:32:00",
+    "sampleCount": 119534,
+    "csvPath": "Data\\SASPOTIFY\\SASPOTIFY.csv",
+    "smoothCsvPath": "Data\\SASPOTIFY\\SASPOTIFY_smooth.csv",
+    "pngPath": "Data\\SASPOTIFY\\SASPOTIFY.png",
+    "fftCsvPath": "Data\\SASPOTIFY\\SASPOTIFY_fft.csv",
+    "fftPngPath": "Data\\SASPOTIFY\\SASPOTIFY_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21867838649086,
+    "fftNyquistHz": 99.60933919324543,
+    "fftSampleIntervalS": 0.005019609647545029,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 600
+  }
+}

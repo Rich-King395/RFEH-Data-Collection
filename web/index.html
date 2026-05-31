@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>P21XXCSR-EVB Capacitor Voltage Live Monitor</title>
-  <link rel="stylesheet" href="/static/style.css?v=fft-config-20260527" />
+  <link rel="stylesheet" href="/static/style.css?v=multi-channel-plot-20260531" />
 </head>
 
 <body>
@@ -44,6 +44,23 @@
       </div>
     </header>
 
+    <section class="channel-panel" aria-label="Channel controls">
+      <div class="channel-control">
+        <label class="recording-field">
+          <span>Active Channel</span>
+          <select id="channelSelect"></select>
+        </label>
+      </div>
+      <div class="channel-display">
+        <span class="status-label">Display Channels</span>
+        <div id="displayChannelList" class="channel-list"></div>
+      </div>
+      <div class="channel-recording">
+        <span class="status-label">Record Channels</span>
+        <div id="channelList" class="channel-list"></div>
+      </div>
+    </section>
+
     <section class="metrics" aria-label="Live metrics">
       <div class="metric">
         <span class="metric-label">Voltage</span>
@@ -80,6 +97,17 @@
               <input id="recordDuration" type="number" min="1" step="1" value="180" />
               <em>s</em>
             </div>
+          </label>
+          <label class="recording-field">
+            <span>Offline FFT Range</span>
+            <select id="recordFftRange">
+              <option value="1">0-1 Hz</option>
+              <option value="2">0-2 Hz</option>
+              <option value="3" selected>0-3 Hz</option>
+              <option value="5">0-5 Hz</option>
+              <option value="10">0-10 Hz</option>
+              <option value="full">Full range</option>
+            </select>
           </label>
           <div class="recording-actions">
             <button id="startRecord" type="button">Start Recording</button>
@@ -155,7 +183,7 @@
     </footer>
   </main>
 
-  <script src="/static/app.js?v=fft-config-20260527"></script>
+  <script src="/static/app.js?v=multi-channel-plot-20260531"></script>
 </body>
 
 </html>

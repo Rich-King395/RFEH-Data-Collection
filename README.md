@@ -65,7 +65,7 @@ Local web live monitor.
 - Serves an English web interface from `web/`.
 - Records experiments from the web page without opening a second serial connection.
 - Computes a real-time FFT spectrum using demean + Hann preprocessing; the browser can adjust FFT window length and frequency range.
-- Runs offline FFT analysis after recording from the completed time-domain CSV.
+- Runs offline FFT analysis after recording from the completed time-domain CSV; the recording panel can choose the saved FFT range.
 - Saves outputs to `Data/<experiment_folder>/`.
 
 Run:
@@ -87,6 +87,39 @@ Optional arguments:
 python LiveServer.py --serial-port COM4 --baud-rate 115200 --http-port 8001
 ```
 
+Multiple serial ports can be started from the backend:
+
+```powershell
+python LiveServer.py --serial-ports COM3 COM4 --baud-rate 115200
+```
+
+The current browser UI still displays the primary channel by default. The backend also exposes per-channel data under the `channels` field in `/api/status`, `/api/samples`, and the WebSocket payload for future multi-channel visualization.
+
+The browser channel panel supports:
+
+- Choosing the active channel shown in the voltage and FFT charts.
+- Choosing multiple display channels for overlaid voltage and real-time FFT plots.
+- Choosing one recording channel for single-channel recording.
+- Choosing multiple recording channels for synchronized recording. Multi-channel recordings are saved independently under `Data/<experiment_folder>/<channel_id>/`, and all selected channels use the same computer-side `PCElapsed(ms)` zero point.
+
+WebSocket payloads use a channel-oriented structure:
+
+```json
+{
+  "primaryChannelId": "COM3",
+  "channels": {
+    "COM3": {
+      "status": {},
+      "recording": {},
+      "samples": [],
+      "fft": {}
+    }
+  }
+}
+```
+
+The legacy top-level `status`, `recording`, `samples`, and `fft` fields are still included for the primary channel during the transition to a full multi-channel UI.
+
 ### `serial_utils.py`
 
 Shared helpers for serial CSV parsing and safe experiment names.
@@ -98,7 +131,7 @@ Browser UI for the live monitor.
 - `index.html`: page structure.
 - `style.css`: layout and visual style.
 - `app.js`: WebSocket client, live time-domain Canvas chart, and live FFT Canvas chart.
-- Recording controls: experiment folder, duration, start/stop, progress, and output paths.
+- Recording controls: experiment folder, duration, offline FFT range, start/stop, progress, and output paths.
 
 Web recording output:
 

@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "SAYOUTUBE",
+  "createdAt": "2026-05-29T19:47:21",
+  "durationSeconds": 600.0,
+  "sampleCount": 119533,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\SAYOUTUBE\\SAYOUTUBE.csv",
+    "smoothCsv": "Data\\SAYOUTUBE\\SAYOUTUBE_smooth.csv",
+    "plot": "Data\\SAYOUTUBE\\SAYOUTUBE.png",
+    "fftCsv": "Data\\SAYOUTUBE\\SAYOUTUBE_fft.csv",
+    "fftPlot": "Data\\SAYOUTUBE\\SAYOUTUBE_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-29T19:47:21",
+    "sampleCount": 119533,
+    "csvPath": "Data\\SAYOUTUBE\\SAYOUTUBE.csv",
+    "smoothCsvPath": "Data\\SAYOUTUBE\\SAYOUTUBE_smooth.csv",
+    "pngPath": "Data\\SAYOUTUBE\\SAYOUTUBE.png",
+    "fftCsvPath": "Data\\SAYOUTUBE\\SAYOUTUBE_fft.csv",
+    "fftPngPath": "Data\\SAYOUTUBE\\SAYOUTUBE_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.2186718755208,
+    "fftNyquistHz": 99.6093359377604,
+    "fftSampleIntervalS": 0.005019609811598568,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 600
+  }
+}

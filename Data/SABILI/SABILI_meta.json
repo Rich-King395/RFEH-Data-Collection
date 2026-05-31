@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "SABILI",
+  "createdAt": "2026-05-29T20:00:48",
+  "durationSeconds": 600.0,
+  "sampleCount": 119541,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\SABILI\\SABILI.csv",
+    "smoothCsv": "Data\\SABILI\\SABILI_smooth.csv",
+    "plot": "Data\\SABILI\\SABILI.png",
+    "fftCsv": "Data\\SABILI\\SABILI_fft.csv",
+    "fftPlot": "Data\\SABILI\\SABILI_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-29T20:00:48",
+    "sampleCount": 119541,
+    "csvPath": "Data\\SABILI\\SABILI.csv",
+    "smoothCsvPath": "Data\\SABILI\\SABILI_smooth.csv",
+    "pngPath": "Data\\SABILI\\SABILI.png",
+    "fftCsvPath": "Data\\SABILI\\SABILI_fft.csv",
+    "fftPngPath": "Data\\SABILI\\SABILI_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21872396024287,
+    "fftNyquistHz": 99.60936198012143,
+    "fftSampleIntervalS": 0.005019608499247115,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 600
+  }
+}

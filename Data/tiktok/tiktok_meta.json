@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "tiktok",
+  "createdAt": "2026-05-27T19:17:29",
+  "durationSeconds": 600.0,
+  "sampleCount": 119033,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 3.0,
+  "files": {
+    "rawCsv": "Data\\tiktok\\tiktok.csv",
+    "smoothCsv": "Data\\tiktok\\tiktok_smooth.csv",
+    "plot": "Data\\tiktok\\tiktok.png",
+    "fftCsv": "Data\\tiktok\\tiktok_fft.csv",
+    "fftPlot": "Data\\tiktok\\tiktok_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-27T19:17:29",
+    "sampleCount": 119033,
+    "csvPath": "Data\\tiktok\\tiktok.csv",
+    "smoothCsvPath": "Data\\tiktok\\tiktok_smooth.csv",
+    "pngPath": "Data\\tiktok\\tiktok.png",
+    "fftCsvPath": "Data\\tiktok\\tiktok_fft.csv",
+    "fftPngPath": "Data\\tiktok\\tiktok_fft.png",
+    "fftMaxFrequencyHz": 3.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21873692455497,
+    "fftNyquistHz": 99.60936846227749,
+    "fftSampleIntervalS": 0.005019608172592242,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1792
+  }
+}

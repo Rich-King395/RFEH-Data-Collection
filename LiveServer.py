@@ -32,6 +32,7 @@ FFT_MAX_FREQUENCY_HZ = 1.0
 FFT_UPDATE_INTERVAL_SECONDS = 1.0
 FFT_MIN_SAMPLES = 32
 RECORDING_FFT_MAX_FREQUENCY_HZ = 3.0
+RECORDING_FFT_MIN_FREQUENCY_HZ = 0.1
 
 ROOT_DIR = Path(__file__).resolve().parent
 WEB_DIR = ROOT_DIR / "web"
@@ -52,6 +53,22 @@ def normalize_smooth_window(value: Any) -> int:
     return min(window, 501)
 
 
+def normalize_recording_fft_max_frequency(value: Any) -> float | None:
+    if value == "full":
+        return None
+    if value is None or value == "":
+        return RECORDING_FFT_MAX_FREQUENCY_HZ
+
+    try:
+        frequency = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Offline FFT range must be a number or full range.") from exc
+
+    if frequency < RECORDING_FFT_MIN_FREQUENCY_HZ:
+        raise ValueError(f"Offline FFT range must be at least {RECORDING_FFT_MIN_FREQUENCY_HZ:g} Hz.")
+    return frequency
+
+
 class RecordingManager:
     def __init__(self, data_dir: Path) -> None:
         self.data_dir = data_dir
@@ -65,6 +82,7 @@ class RecordingManager:
         self._smooth = True
         self._show_raw = True
         self._smooth_window = 11
+        self._recording_fft_max_frequency_hz: float | None = RECORDING_FFT_MAX_FREQUENCY_HZ
         self._started_at = 0.0
         self._sample_count = 0
         self._samples: list[dict[str, Any]] = []
@@ -80,7 +98,15 @@ class RecordingManager:
         self._writer: csv.writer | None = None
         self._result: dict[str, Any] = {}
 
-    def start(self, config: dict[str, Any], serial_connected: bool) -> dict[str, Any]:
+    def start(
+        self,
+        config: dict[str, Any],
+        serial_connected: bool,
+        started_at: float | None = None,
+        run_dir_override: Path | None = None,
+        file_stem_override: str | None = None,
+        group_name: str | None = None,
+    ) -> dict[str, Any]:
         if not serial_connected:
             raise ValueError("Serial port is not connected.")
 
@@ -99,8 +125,12 @@ class RecordingManager:
             raise ValueError("At least one of smooth or raw plotting must be enabled.")
 
         smooth_window = normalize_smooth_window(config.get("smoothWindow", 11))
-        run_dir = self.data_dir / folder_name
-        raw_csv_path = run_dir / f"{folder_name}.csv"
+        recording_fft_max_frequency_hz = normalize_recording_fft_max_frequency(
+            config.get("offlineFftMaxFrequencyHz", RECORDING_FFT_MAX_FREQUENCY_HZ)
+        )
+        file_stem = sanitize_run_name(file_stem_override) if file_stem_override else folder_name
+        run_dir = run_dir_override if run_dir_override is not None else self.data_dir / folder_name
+        raw_csv_path = run_dir / f"{file_stem}.csv"
 
         with self._lock:
             if self._active or self._saving:
@@ -112,19 +142,20 @@ class RecordingManager:
             self._reset_locked()
             self._active = True
             self._completed = False
-            self._folder_name = folder_name
+            self._folder_name = folder_name if group_name is None else f"{group_name}/{file_stem}"
             self._duration_s = duration_s
             self._smooth = smooth
             self._show_raw = show_raw
             self._smooth_window = smooth_window
-            self._started_at = time.monotonic()
+            self._recording_fft_max_frequency_hz = recording_fft_max_frequency_hz
+            self._started_at = started_at if started_at is not None else time.monotonic()
             self._run_dir = run_dir
             self._raw_csv_path = raw_csv_path
-            self._smooth_csv_path = run_dir / f"{folder_name}_smooth.csv" if smooth else None
-            self._png_path = run_dir / f"{folder_name}.png"
-            self._fft_csv_path = run_dir / f"{folder_name}_fft.csv"
-            self._fft_png_path = run_dir / f"{folder_name}_fft.png"
-            self._meta_path = run_dir / f"{folder_name}_meta.json"
+            self._smooth_csv_path = run_dir / f"{file_stem}_smooth.csv" if smooth else None
+            self._png_path = run_dir / f"{file_stem}.png"
+            self._fft_csv_path = run_dir / f"{file_stem}_fft.csv"
+            self._fft_png_path = run_dir / f"{file_stem}_fft.png"
+            self._meta_path = run_dir / f"{file_stem}_meta.json"
             self._csv_file = raw_csv_path.open("w", encoding="utf-8", newline="")
             self._writer = csv.writer(self._csv_file)
             self._writer.writerow(RAW_CSV_HEADER)
@@ -207,6 +238,7 @@ class RecordingManager:
                 "smooth": self._smooth,
                 "showRaw": self._show_raw,
                 "smoothWindow": self._smooth_window,
+                "offlineFftMaxFrequencyHz": self._recording_fft_max_frequency_hz,
                 "error": self._error,
                 "outputDir": self._relative_path(self._run_dir),
                 "csvPath": self._relative_path(self._raw_csv_path),
@@ -232,6 +264,7 @@ class RecordingManager:
             smooth = self._smooth
             show_raw = self._show_raw
             smooth_window = self._smooth_window
+            recording_fft_max_frequency_hz = self._recording_fft_max_frequency_hz
 
         if raw_csv_path is None or png_path is None or fft_csv_path is None or fft_png_path is None:
             raise RuntimeError("Recording paths were not initialized.")
@@ -253,14 +286,14 @@ class RecordingManager:
         fft_result: dict[str, Any] = {
             "fftCsvPath": self._relative_path(fft_csv_path),
             "fftPngPath": self._relative_path(fft_png_path),
-            "fftMaxFrequencyHz": RECORDING_FFT_MAX_FREQUENCY_HZ,
+            "fftMaxFrequencyHz": recording_fft_max_frequency_hz,
         }
         try:
             analysis = analyze_voltage_fft(
                 csv_path=raw_csv_path,
                 output_csv_path=fft_csv_path,
                 output_png_path=fft_png_path,
-                max_frequency=RECORDING_FFT_MAX_FREQUENCY_HZ,
+                max_frequency=recording_fft_max_frequency_hz,
             )
             fft_result.update(
                 {
@@ -329,7 +362,7 @@ class RecordingManager:
             "smoothWindow": self._smooth_window,
             "rawHeader": RAW_CSV_HEADER,
             "smoothHeader": SMOOTH_CSV_HEADER if self._smooth else None,
-            "fftMaxFrequencyHz": RECORDING_FFT_MAX_FREQUENCY_HZ,
+            "fftMaxFrequencyHz": self._recording_fft_max_frequency_hz,
             "files": {
                 "rawCsv": self._relative_path(self._raw_csv_path),
                 "smoothCsv": self._relative_path(self._smooth_csv_path),
@@ -362,6 +395,7 @@ class RecordingManager:
         self._smooth = True
         self._show_raw = True
         self._smooth_window = 11
+        self._recording_fft_max_frequency_hz = RECORDING_FFT_MAX_FREQUENCY_HZ
         self._started_at = 0.0
         self._sample_count = 0
         self._samples = []
@@ -385,7 +419,13 @@ class RecordingManager:
 
 
 class SerialMonitor:
-    def __init__(self, port: str, baud_rate: int, recorder: RecordingManager | None = None) -> None:
+    def __init__(
+        self,
+        port: str,
+        baud_rate: int,
+        recorder: RecordingManager | None = None,
+        time_origin: float | None = None,
+    ) -> None:
         self.port = port
         self.baud_rate = baud_rate
         self.recorder = recorder
@@ -393,7 +433,7 @@ class SerialMonitor:
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
-        self._started_at = time.monotonic()
+        self._started_at = time_origin if time_origin is not None else time.monotonic()
         self._sequence = 0
         self._latest_error = ""
         self._connected = False
@@ -615,15 +655,191 @@ def np_array(values: list[float]):
     return np.asarray(values, dtype=float)
 
 
-def create_app(monitor: SerialMonitor, recorder: RecordingManager, fft_manager: RealtimeFftManager) -> FastAPI:
+class MonitorChannel:
+    def __init__(self, channel_id: str, port: str, baud_rate: int, data_dir: Path, time_origin: float) -> None:
+        self.id = channel_id
+        self.port = port
+        self.baud_rate = baud_rate
+        self.recorder = RecordingManager(data_dir)
+        self.monitor = SerialMonitor(port=port, baud_rate=baud_rate, recorder=self.recorder, time_origin=time_origin)
+        self.fft_manager = RealtimeFftManager()
+
+    def start(self) -> None:
+        self.monitor.start()
+
+    def stop(self, reason: str = "server shutdown") -> None:
+        self.recorder.stop(reason=reason)
+        self.monitor.stop()
+
+    def payload(self, samples: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        fft_samples = self.monitor.recent_samples(self.fft_manager.window_seconds)
+        return {
+            "id": self.id,
+            "port": self.port,
+            "baudRate": self.baud_rate,
+            "status": self.monitor.status(),
+            "recording": self.recorder.status(),
+            "samples": samples if samples is not None else [],
+            "fft": self.fft_manager.maybe_compute(fft_samples),
+        }
+
+
+class ChannelManager:
+    def __init__(self, ports: list[str], baud_rate: int, data_dir: Path) -> None:
+        unique_ports = self._unique_ports(ports)
+        self.data_dir = data_dir
+        self.time_origin = time.monotonic()
+        self.channels = {
+            port: MonitorChannel(
+                channel_id=port,
+                port=port,
+                baud_rate=baud_rate,
+                data_dir=data_dir,
+                time_origin=self.time_origin,
+            )
+            for port in unique_ports
+        }
+        self.primary_id = unique_ports[0]
+
+    def start(self) -> None:
+        for channel in self.channels.values():
+            channel.start()
+
+    def stop(self, reason: str = "server shutdown") -> None:
+        for channel in self.channels.values():
+            channel.stop(reason=reason)
+
+    def primary(self) -> MonitorChannel:
+        return self.channels[self.primary_id]
+
+    def get(self, channel_id: str | None) -> MonitorChannel:
+        if not channel_id:
+            return self.primary()
+        try:
+            return self.channels[channel_id]
+        except KeyError as exc:
+            raise ValueError(f"Unknown channel: {channel_id}") from exc
+
+    def payload(self) -> dict[str, Any]:
+        return {channel_id: channel.payload() for channel_id, channel in self.channels.items()}
+
+    def start_recording(self, config: dict[str, Any]) -> dict[str, Any]:
+        channel_ids = self._resolve_channel_ids(config.get("channelIds"))
+        if len(channel_ids) == 1:
+            channel = self.get(channel_ids[0])
+            return {
+                "multi": False,
+                "channelId": channel.id,
+                "primaryChannelId": channel.id,
+                "recording": channel.recorder.start(
+                    config=config,
+                    serial_connected=channel.monitor.status()["connected"],
+                ),
+            }
+
+        folder_name = sanitize_run_name(str(config.get("folderName", "")))
+        group_dir = self.data_dir / folder_name
+        if group_dir.exists():
+            raise FileExistsError(f"Output folder already exists: {group_dir}")
+
+        for channel_id in channel_ids:
+            channel = self.get(channel_id)
+            if not channel.monitor.status()["connected"]:
+                raise ValueError(f"Serial port is not connected: {channel_id}")
+            recording = channel.recorder.status()
+            if recording["active"] or recording["saving"]:
+                raise RuntimeError(f"A recording is already active on {channel_id}.")
+
+        started_at = time.monotonic()
+        statuses: dict[str, Any] = {}
+        started_channels: list[MonitorChannel] = []
+        try:
+            for channel_id in channel_ids:
+                channel = self.get(channel_id)
+                channel_stem = sanitize_run_name(channel_id)
+                statuses[channel_id] = channel.recorder.start(
+                    config={**config, "folderName": channel_stem},
+                    serial_connected=True,
+                    started_at=started_at,
+                    run_dir_override=group_dir / channel_stem,
+                    file_stem_override=channel_stem,
+                    group_name=folder_name,
+                )
+                started_channels.append(channel)
+        except Exception:
+            for channel in started_channels:
+                channel.recorder.stop(reason="multi-channel start rollback")
+            raise
+
+        return {
+            "multi": True,
+            "folderName": folder_name,
+            "startedAt": started_at,
+            "channelIds": channel_ids,
+            "channels": statuses,
+        }
+
+    def stop_recording(self, config: dict[str, Any] | None = None) -> dict[str, Any]:
+        channel_ids = self._resolve_channel_ids((config or {}).get("channelIds"))
+        if len(channel_ids) == 1:
+            channel = self.get(channel_ids[0])
+            return {
+                "multi": False,
+                "channelId": channel.id,
+                "primaryChannelId": channel.id,
+                "recording": channel.recorder.stop(reason="manual stop"),
+            }
+
+        return {
+            "multi": True,
+            "channelIds": channel_ids,
+            "channels": {
+                channel_id: self.get(channel_id).recorder.stop(reason="manual stop") for channel_id in channel_ids
+            },
+        }
+
+    def _resolve_channel_ids(self, requested: Any) -> list[str]:
+        if requested == "all":
+            return list(self.channels.keys())
+        if isinstance(requested, list):
+            channel_ids = []
+            for channel_id in requested:
+                normalized = str(channel_id)
+                if normalized not in self.channels:
+                    raise ValueError(f"Unknown channel: {normalized}")
+                channel_ids.append(normalized)
+        else:
+            channel_ids = []
+
+        if not channel_ids:
+            channel_ids = [self.primary_id]
+
+        return self._unique_ports(channel_ids)
+
+    @staticmethod
+    def _unique_ports(ports: list[str]) -> list[str]:
+        unique: list[str] = []
+        seen: set[str] = set()
+        for port in ports:
+            normalized = str(port).strip()
+            if not normalized or normalized in seen:
+                continue
+            unique.append(normalized)
+            seen.add(normalized)
+
+        if not unique:
+            unique.append(DEFAULT_SERIAL_PORT)
+        return unique
+
+
+def create_app(channels: ChannelManager) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI):
-        monitor.start()
+        channels.start()
         try:
             yield
         finally:
-            recorder.stop(reason="server shutdown")
-            monitor.stop()
+            channels.stop(reason="server shutdown")
 
     app = FastAPI(title="VCAP Live Monitor", lifespan=lifespan)
 
@@ -635,41 +851,70 @@ def create_app(monitor: SerialMonitor, recorder: RecordingManager, fft_manager: 
 
     @app.get("/api/status")
     async def api_status() -> dict[str, Any]:
-        fft_samples = monitor.recent_samples(fft_manager.window_seconds)
+        primary_payload = channels.primary().payload()
         return {
-            "status": monitor.status(),
-            "recording": recorder.status(),
-            "fft": fft_manager.maybe_compute(fft_samples),
+            "status": primary_payload["status"],
+            "recording": primary_payload["recording"],
+            "fft": primary_payload["fft"],
+            "channels": channels.payload(),
         }
 
     @app.get("/api/samples")
     async def api_samples(seconds: float = 60.0) -> dict[str, Any]:
+        channel_payloads: dict[str, Any] = {}
+        for channel_id, channel in channels.channels.items():
+            samples = channel.monitor.recent_samples(seconds)
+            channel_payloads[channel_id] = channel.payload(samples=samples)
+
+        primary_payload = channel_payloads[channels.primary_id]
         return {
-            "status": monitor.status(),
-            "recording": recorder.status(),
-            "samples": monitor.recent_samples(seconds),
-            "fft": fft_manager.maybe_compute(monitor.recent_samples(fft_manager.window_seconds)),
+            "status": primary_payload["status"],
+            "recording": primary_payload["recording"],
+            "samples": primary_payload["samples"],
+            "fft": primary_payload["fft"],
+            "channels": channel_payloads,
+        }
+
+    @app.get("/api/channels")
+    async def api_channels() -> dict[str, Any]:
+        return {
+            "primaryChannelId": channels.primary_id,
+            "channels": channels.payload(),
         }
 
     @app.get("/api/recording/status")
-    async def recording_status() -> dict[str, Any]:
-        return recorder.status()
+    async def recording_status(channel: str | None = None) -> dict[str, Any]:
+        try:
+            return channels.get(channel).recorder.status()
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.post("/api/recording/start")
     async def recording_start(config: dict[str, Any]) -> dict[str, Any]:
         try:
-            return recorder.start(config=config, serial_connected=monitor.status()["connected"])
+            if config.get("channelIds"):
+                return channels.start_recording(config)
+
+            channel = channels.get(config.get("channelId") or config.get("channel"))
+            return channel.recorder.start(config=config, serial_connected=channel.monitor.status()["connected"])
         except (ValueError, FileExistsError, RuntimeError) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/api/recording/stop")
-    async def recording_stop() -> dict[str, Any]:
-        return recorder.stop(reason="manual stop")
+    async def recording_stop(config: dict[str, Any] | None = None) -> dict[str, Any]:
+        try:
+            if config and config.get("channelIds"):
+                return channels.stop_recording(config)
+
+            channel_id = (config or {}).get("channelId") or (config or {}).get("channel")
+            return channels.get(channel_id).recorder.stop(reason="manual stop")
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.websocket("/ws")
     async def websocket_endpoint(websocket: WebSocket) -> None:
         await websocket.accept()
-        last_sequence = 0
+        last_sequences = {channel_id: 0 for channel_id in channels.channels}
 
         try:
             while True:
@@ -677,27 +922,40 @@ def create_app(monitor: SerialMonitor, recorder: RecordingManager, fft_manager: 
                     message = await asyncio.wait_for(websocket.receive_text(), timeout=0.001)
                     data = json.loads(message)
                     if data.get("type") == "fft_config":
-                        fft_manager.update_config(
+                        channel = channels.get(data.get("channelId") or data.get("channel"))
+                        channel.fft_manager.update_config(
                             window_seconds=data.get("windowSeconds"),
                             max_frequency_hz=data.get("maxFrequencyHz"),
                         )
+                    elif data.get("type") == "fft_config_all":
+                        for channel in channels.channels.values():
+                            channel.fft_manager.update_config(
+                                window_seconds=data.get("windowSeconds"),
+                                max_frequency_hz=data.get("maxFrequencyHz"),
+                            )
                 except asyncio.TimeoutError:
                     pass
                 except (json.JSONDecodeError, ValueError):
                     pass
 
-                samples = monitor.samples_after(last_sequence)
-                if samples:
-                    last_sequence = samples[-1]["sequence"]
-                fft_samples = monitor.recent_samples(fft_manager.window_seconds)
+                channel_payloads: dict[str, Any] = {}
+                for channel_id, channel in channels.channels.items():
+                    samples = channel.monitor.samples_after(last_sequences.get(channel_id, 0))
+                    if samples:
+                        last_sequences[channel_id] = samples[-1]["sequence"]
+                    channel_payloads[channel_id] = channel.payload(samples=samples)
+
+                primary_payload = channel_payloads[channels.primary_id]
 
                 await websocket.send_text(
                     json.dumps(
                         {
-                            "status": monitor.status(),
-                            "recording": recorder.status(),
-                            "samples": samples,
-                            "fft": fft_manager.maybe_compute(fft_samples),
+                            "primaryChannelId": channels.primary_id,
+                            "channels": channel_payloads,
+                            "status": primary_payload["status"],
+                            "recording": primary_payload["recording"],
+                            "samples": primary_payload["samples"],
+                            "fft": primary_payload["fft"],
                         }
                     )
                 )
@@ -709,15 +967,18 @@ def create_app(monitor: SerialMonitor, recorder: RecordingManager, fft_manager: 
     return app
 
 
-default_recorder = RecordingManager(DATA_DIR)
-default_monitor = SerialMonitor(port=DEFAULT_SERIAL_PORT, baud_rate=DEFAULT_BAUD_RATE, recorder=default_recorder)
-default_fft_manager = RealtimeFftManager()
-app = create_app(default_monitor, default_recorder, default_fft_manager)
+default_channels = ChannelManager(ports=[DEFAULT_SERIAL_PORT], baud_rate=DEFAULT_BAUD_RATE, data_dir=DATA_DIR)
+app = create_app(default_channels)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Start the local VCAP live monitor.")
     parser.add_argument("--serial-port", default=DEFAULT_SERIAL_PORT, help="Arduino serial port.")
+    parser.add_argument(
+        "--serial-ports",
+        nargs="+",
+        help="One or more Arduino serial ports, for example: --serial-ports COM3 COM4",
+    )
     parser.add_argument("--baud-rate", type=int, default=DEFAULT_BAUD_RATE, help="Arduino serial baud rate.")
     parser.add_argument("--host", default=DEFAULT_HOST, help="HTTP host.")
     parser.add_argument("--http-port", type=int, default=DEFAULT_HTTP_PORT, help="HTTP port.")
@@ -726,10 +987,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    recorder = RecordingManager(DATA_DIR)
-    monitor = SerialMonitor(port=args.serial_port, baud_rate=args.baud_rate, recorder=recorder)
-    fft_manager = RealtimeFftManager()
-    app = create_app(monitor, recorder, fft_manager)
+    serial_ports = args.serial_ports if args.serial_ports else [args.serial_port]
+    channels = ChannelManager(ports=serial_ports, baud_rate=args.baud_rate, data_dir=DATA_DIR)
+    app = create_app(channels)
 
     try:
         import uvicorn
@@ -737,7 +997,7 @@ def main() -> None:
         raise RuntimeError("uvicorn is not installed. Run: pip install fastapi uvicorn") from exc
 
     print(f"Live monitor: http://{args.host}:{args.http_port}")
-    print(f"Serial input: {args.serial_port} @ {args.baud_rate} baud")
+    print(f"Serial inputs: {', '.join(channels.channels)} @ {args.baud_rate} baud")
     uvicorn.run(app, host=args.host, port=args.http_port)
 
 

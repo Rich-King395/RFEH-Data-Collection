@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "bili",
+  "createdAt": "2026-05-27T17:54:36",
+  "durationSeconds": 600.0,
+  "sampleCount": 119028,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 3.0,
+  "files": {
+    "rawCsv": "Data\\bili\\bili.csv",
+    "smoothCsv": "Data\\bili\\bili_smooth.csv",
+    "plot": "Data\\bili\\bili.png",
+    "fftCsv": "Data\\bili\\bili_fft.csv",
+    "fftPlot": "Data\\bili\\bili_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-27T17:54:36",
+    "sampleCount": 119028,
+    "csvPath": "Data\\bili\\bili.csv",
+    "smoothCsvPath": "Data\\bili\\bili_smooth.csv",
+    "pngPath": "Data\\bili\\bili.png",
+    "fftCsvPath": "Data\\bili\\bili_fft.csv",
+    "fftPngPath": "Data\\bili\\bili_fft.png",
+    "fftMaxFrequencyHz": 3.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.2187042340272,
+    "fftNyquistHz": 99.6093521170136,
+    "fftSampleIntervalS": 0.0050196089962781555,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1792
+  }
+}
