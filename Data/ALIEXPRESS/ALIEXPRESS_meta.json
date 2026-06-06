@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "ALIEXPRESS",
+  "createdAt": "2026-06-06T14:56:46",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238056,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\ALIEXPRESS\\ALIEXPRESS.csv",
+    "smoothCsv": "Data\\ALIEXPRESS\\ALIEXPRESS_smooth.csv",
+    "plot": "Data\\ALIEXPRESS\\ALIEXPRESS.png",
+    "fftCsv": "Data\\ALIEXPRESS\\ALIEXPRESS_fft.csv",
+    "fftPlot": "Data\\ALIEXPRESS\\ALIEXPRESS_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T14:56:46",
+    "sampleCount": 238056,
+    "csvPath": "Data\\ALIEXPRESS\\ALIEXPRESS.csv",
+    "smoothCsvPath": "Data\\ALIEXPRESS\\ALIEXPRESS_smooth.csv",
+    "pngPath": "Data\\ALIEXPRESS\\ALIEXPRESS.png",
+    "fftCsvPath": "Data\\ALIEXPRESS\\ALIEXPRESS_fft.csv",
+    "fftPngPath": "Data\\ALIEXPRESS\\ALIEXPRESS_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 58.09244123254977,
+    "fftNyquistHz": 29.046220616274883,
+    "fftSampleIntervalS": 0.017213943480131975,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

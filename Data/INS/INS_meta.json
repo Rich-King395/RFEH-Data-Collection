@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "INS",
+  "createdAt": "2026-06-05T14:38:50",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238054,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\INS\\INS.csv",
+    "smoothCsv": "Data\\INS\\INS_smooth.csv",
+    "plot": "Data\\INS\\INS.png",
+    "fftCsv": "Data\\INS\\INS_fft.csv",
+    "fftPlot": "Data\\INS\\INS_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T14:38:50",
+    "sampleCount": 238054,
+    "csvPath": "Data\\INS\\INS.csv",
+    "smoothCsvPath": "Data\\INS\\INS_smooth.csv",
+    "pngPath": "Data\\INS\\INS.png",
+    "fftCsvPath": "Data\\INS\\INS_fft.csv",
+    "fftPngPath": "Data\\INS\\INS_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 49.815000000000005,
+    "fftNyquistHz": 24.907500000000002,
+    "fftSampleIntervalS": 0.02007427481682224,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

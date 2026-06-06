@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "FACEBOOK",
+  "createdAt": "2026-06-05T15:14:06",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238060,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\FACEBOOK\\FACEBOOK.csv",
+    "smoothCsv": "Data\\FACEBOOK\\FACEBOOK_smooth.csv",
+    "plot": "Data\\FACEBOOK\\FACEBOOK.png",
+    "fftCsv": "Data\\FACEBOOK\\FACEBOOK_fft.csv",
+    "fftPlot": "Data\\FACEBOOK\\FACEBOOK_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T15:14:06",
+    "sampleCount": 238060,
+    "csvPath": "Data\\FACEBOOK\\FACEBOOK.csv",
+    "smoothCsvPath": "Data\\FACEBOOK\\FACEBOOK_smooth.csv",
+    "pngPath": "Data\\FACEBOOK\\FACEBOOK.png",
+    "fftCsvPath": "Data\\FACEBOOK\\FACEBOOK_fft.csv",
+    "fftPngPath": "Data\\FACEBOOK\\FACEBOOK_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 50.26916666666667,
+    "fftNyquistHz": 25.134583333333335,
+    "fftSampleIntervalS": 0.01989290983538617,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

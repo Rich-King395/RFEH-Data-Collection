@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "VIMEO",
+  "createdAt": "2026-06-04T20:54:14",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238026,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\VIMEO\\VIMEO.csv",
+    "smoothCsv": "Data\\VIMEO\\VIMEO_smooth.csv",
+    "plot": "Data\\VIMEO\\VIMEO.png",
+    "fftCsv": "Data\\VIMEO\\VIMEO_fft.csv",
+    "fftPlot": "Data\\VIMEO\\VIMEO_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-04T20:54:14",
+    "sampleCount": 238026,
+    "csvPath": "Data\\VIMEO\\VIMEO.csv",
+    "smoothCsvPath": "Data\\VIMEO\\VIMEO_smooth.csv",
+    "pngPath": "Data\\VIMEO\\VIMEO.png",
+    "fftCsvPath": "Data\\VIMEO\\VIMEO_fft.csv",
+    "fftPngPath": "Data\\VIMEO\\VIMEO_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 61.08833333333334,
+    "fftNyquistHz": 30.54416666666667,
+    "fftSampleIntervalS": 0.016369737811366053,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

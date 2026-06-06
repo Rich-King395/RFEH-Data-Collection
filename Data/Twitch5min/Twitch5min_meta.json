@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "Twitch5min",
+  "createdAt": "2026-05-31T17:05:33",
+  "durationSeconds": 300.0,
+  "sampleCount": 59514,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\Twitch5min\\Twitch5min.csv",
+    "smoothCsv": "Data\\Twitch5min\\Twitch5min_smooth.csv",
+    "plot": "Data\\Twitch5min\\Twitch5min.png",
+    "fftCsv": "Data\\Twitch5min\\Twitch5min_fft.csv",
+    "fftPlot": "Data\\Twitch5min\\Twitch5min_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-31T17:05:33",
+    "sampleCount": 59514,
+    "csvPath": "Data\\Twitch5min\\Twitch5min.csv",
+    "smoothCsvPath": "Data\\Twitch5min\\Twitch5min_smooth.csv",
+    "pngPath": "Data\\Twitch5min\\Twitch5min.png",
+    "fftCsvPath": "Data\\Twitch5min\\Twitch5min_fft.csv",
+    "fftPngPath": "Data\\Twitch5min\\Twitch5min_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.2186976955933,
+    "fftNyquistHz": 99.60934884779665,
+    "fftSampleIntervalS": 0.005019609161023644,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 298
+  }
+}

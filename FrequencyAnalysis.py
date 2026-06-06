@@ -12,8 +12,7 @@ FFT_CSV_HEADER = ["Frequency(Hz)", "Amplitude(V)"]
 
 
 def load_time_voltage_for_fft(csv_path: Path) -> tuple[np.ndarray, np.ndarray, str]:
-    pc_elapsed_ms: list[float] = []
-    arduino_time_ms: list[float] = []
+    rows: list[dict[str, str]] = []
     voltage_v: list[float] = []
 
     with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
@@ -22,8 +21,9 @@ def load_time_voltage_for_fft(csv_path: Path) -> tuple[np.ndarray, np.ndarray, s
 
         if "Voltage(V)" not in fieldnames:
             raise ValueError("CSV must contain a Voltage(V) column.")
-        if "PCElapsed(ms)" not in fieldnames and "Time(ms)" not in fieldnames:
-            raise ValueError("CSV must contain PCElapsed(ms) or Time(ms).")
+        time_columns = [column for column in ("PCElapsed(ms)", "Time(ms)") if column in fieldnames]
+        if not time_columns:
+            raise ValueError("CSV must contain Time(ms).")
 
         for row in reader:
             try:
@@ -31,27 +31,20 @@ def load_time_voltage_for_fft(csv_path: Path) -> tuple[np.ndarray, np.ndarray, s
             except (TypeError, ValueError):
                 continue
 
-            pc_time = _try_float(row.get("PCElapsed(ms)"))
-            arduino_time = _try_float(row.get("Time(ms)"))
-
-            if pc_time is None and arduino_time is None:
-                continue
-
-            pc_elapsed_ms.append(pc_time if pc_time is not None else np.nan)
-            arduino_time_ms.append(arduino_time if arduino_time is not None else np.nan)
+            rows.append(row)
             voltage_v.append(voltage)
 
     if len(voltage_v) < 8:
         raise ValueError("At least 8 valid samples are required for FFT analysis.")
 
-    pc_array = np.asarray(pc_elapsed_ms, dtype=float)
-    arduino_array = np.asarray(arduino_time_ms, dtype=float)
     voltage_array = np.asarray(voltage_v, dtype=float)
 
-    if _is_strictly_increasing(pc_array):
-        return pc_array / 1000.0, voltage_array, "PCElapsed(ms)"
-    if _is_strictly_increasing(arduino_array):
-        return arduino_array / 1000.0, voltage_array, "Time(ms)"
+    for column in time_columns:
+        parsed_times = [_try_float(row.get(column)) for row in rows]
+        time_values = np.asarray([value if value is not None else np.nan for value in parsed_times], dtype=float)
+        time_values, filtered_voltage = _strictly_increasing_pairs(time_values, voltage_array)
+        if time_values.size >= 8:
+            return time_values / 1000.0, filtered_voltage, column
 
     raise ValueError("No strictly increasing time column found for FFT analysis.")
 
@@ -199,6 +192,24 @@ def _is_strictly_increasing(values: np.ndarray) -> bool:
     if values.size < 2 or not np.all(np.isfinite(values)):
         return False
     return bool(np.all(np.diff(values) > 0))
+
+
+def _strictly_increasing_pairs(time_values: np.ndarray, voltage_values: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    filtered_time: list[float] = []
+    filtered_voltage: list[float] = []
+    last_time: float | None = None
+
+    for time_value, voltage_value in zip(time_values, voltage_values):
+        if not np.isfinite(time_value) or not np.isfinite(voltage_value):
+            continue
+        if last_time is not None and time_value <= last_time:
+            continue
+
+        filtered_time.append(float(time_value))
+        filtered_voltage.append(float(voltage_value))
+        last_time = float(time_value)
+
+    return np.asarray(filtered_time, dtype=float), np.asarray(filtered_voltage, dtype=float)
 
 
 def main() -> None:

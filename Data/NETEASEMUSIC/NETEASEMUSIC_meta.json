@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "NETEASEMUSIC",
+  "createdAt": "2026-06-06T16:32:01",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238048,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\NETEASEMUSIC\\NETEASEMUSIC.csv",
+    "smoothCsv": "Data\\NETEASEMUSIC\\NETEASEMUSIC_smooth.csv",
+    "plot": "Data\\NETEASEMUSIC\\NETEASEMUSIC.png",
+    "fftCsv": "Data\\NETEASEMUSIC\\NETEASEMUSIC_fft.csv",
+    "fftPlot": "Data\\NETEASEMUSIC\\NETEASEMUSIC_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T16:32:01",
+    "sampleCount": 238048,
+    "csvPath": "Data\\NETEASEMUSIC\\NETEASEMUSIC.csv",
+    "smoothCsvPath": "Data\\NETEASEMUSIC\\NETEASEMUSIC_smooth.csv",
+    "pngPath": "Data\\NETEASEMUSIC\\NETEASEMUSIC.png",
+    "fftCsvPath": "Data\\NETEASEMUSIC\\NETEASEMUSIC_fft.csv",
+    "fftPngPath": "Data\\NETEASEMUSIC\\NETEASEMUSIC_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 61.29833333333334,
+    "fftNyquistHz": 30.64916666666667,
+    "fftSampleIntervalS": 0.016313657250061175,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

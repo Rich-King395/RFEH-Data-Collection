@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "AMAZONSHOPPING",
+  "createdAt": "2026-06-06T11:24:38",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238053,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING.csv",
+    "smoothCsv": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_smooth.csv",
+    "plot": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING.png",
+    "fftCsv": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_fft.csv",
+    "fftPlot": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T11:24:38",
+    "sampleCount": 238053,
+    "csvPath": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING.csv",
+    "smoothCsvPath": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_smooth.csv",
+    "pngPath": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING.png",
+    "fftCsvPath": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_fft.csv",
+    "fftPngPath": "Data\\AMAZONSHOPPING\\AMAZONSHOPPING_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 51.825833333333335,
+    "fftNyquistHz": 25.912916666666668,
+    "fftSampleIntervalS": 0.019295396439999356,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

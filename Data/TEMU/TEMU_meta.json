@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "TEMU",
+  "createdAt": "2026-06-06T15:50:04",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238050,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\TEMU\\TEMU.csv",
+    "smoothCsv": "Data\\TEMU\\TEMU_smooth.csv",
+    "plot": "Data\\TEMU\\TEMU.png",
+    "fftCsv": "Data\\TEMU\\TEMU_fft.csv",
+    "fftPlot": "Data\\TEMU\\TEMU_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T15:50:04",
+    "sampleCount": 238050,
+    "csvPath": "Data\\TEMU\\TEMU.csv",
+    "smoothCsvPath": "Data\\TEMU\\TEMU_smooth.csv",
+    "pngPath": "Data\\TEMU\\TEMU.png",
+    "fftCsvPath": "Data\\TEMU\\TEMU_fft.csv",
+    "fftPngPath": "Data\\TEMU\\TEMU_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 59.77499999999999,
+    "fftNyquistHz": 29.887499999999996,
+    "fftSampleIntervalS": 0.016729401923881223,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

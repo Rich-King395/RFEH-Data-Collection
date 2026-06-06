@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "folderName": "JOOX",
+  "createdAt": "2026-06-05T11:26:39",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238047,
+  "smooth": false,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": null,
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\JOOX\\JOOX.csv",
+    "smoothCsv": null,
+    "plot": "Data\\JOOX\\JOOX.png",
+    "fftCsv": "Data\\JOOX\\JOOX_fft.csv",
+    "fftPlot": "Data\\JOOX\\JOOX_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T11:26:39",
+    "sampleCount": 238047,
+    "csvPath": "Data\\JOOX\\JOOX.csv",
+    "smoothCsvPath": null,
+    "pngPath": "Data\\JOOX\\JOOX.png",
+    "fftCsvPath": "Data\\JOOX\\JOOX_fft.csv",
+    "fftPngPath": "Data\\JOOX\\JOOX_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 51.155,
+    "fftNyquistHz": 25.5775,
+    "fftSampleIntervalS": 0.01954843123839312,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

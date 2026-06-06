@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "SHEIN",
+  "createdAt": "2026-06-06T16:55:57",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238052,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\SHEIN\\SHEIN.csv",
+    "smoothCsv": "Data\\SHEIN\\SHEIN_smooth.csv",
+    "plot": "Data\\SHEIN\\SHEIN.png",
+    "fftCsv": "Data\\SHEIN\\SHEIN_fft.csv",
+    "fftPlot": "Data\\SHEIN\\SHEIN_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T16:55:57",
+    "sampleCount": 238052,
+    "csvPath": "Data\\SHEIN\\SHEIN.csv",
+    "smoothCsvPath": "Data\\SHEIN\\SHEIN_smooth.csv",
+    "pngPath": "Data\\SHEIN\\SHEIN.png",
+    "fftCsvPath": "Data\\SHEIN\\SHEIN_fft.csv",
+    "fftPngPath": "Data\\SHEIN\\SHEIN_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 57.84488972778826,
+    "fftNyquistHz": 28.92244486389413,
+    "fftSampleIntervalS": 0.017287611830636915,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

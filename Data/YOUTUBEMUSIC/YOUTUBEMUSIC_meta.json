@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "YOUTUBEMUSIC",
+  "createdAt": "2026-06-05T10:59:04",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238016,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC.csv",
+    "smoothCsv": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_smooth.csv",
+    "plot": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC.png",
+    "fftCsv": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_fft.csv",
+    "fftPlot": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T10:59:04",
+    "sampleCount": 238016,
+    "csvPath": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC.csv",
+    "smoothCsvPath": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_smooth.csv",
+    "pngPath": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC.png",
+    "fftCsvPath": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_fft.csv",
+    "fftPngPath": "Data\\YOUTUBEMUSIC\\YOUTUBEMUSIC_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 57.291666666666664,
+    "fftNyquistHz": 28.645833333333332,
+    "fftSampleIntervalS": 0.017454545454545455,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

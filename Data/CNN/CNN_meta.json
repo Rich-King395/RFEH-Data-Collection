@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "CNN",
+  "createdAt": "2026-06-05T17:22:15",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238041,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\CNN\\CNN.csv",
+    "smoothCsv": "Data\\CNN\\CNN_smooth.csv",
+    "plot": "Data\\CNN\\CNN.png",
+    "fftCsv": "Data\\CNN\\CNN_fft.csv",
+    "fftPlot": "Data\\CNN\\CNN_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T17:22:15",
+    "sampleCount": 238041,
+    "csvPath": "Data\\CNN\\CNN.csv",
+    "smoothCsvPath": "Data\\CNN\\CNN_smooth.csv",
+    "pngPath": "Data\\CNN\\CNN.png",
+    "fftCsvPath": "Data\\CNN\\CNN_fft.csv",
+    "fftPngPath": "Data\\CNN\\CNN_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 52.818333333333335,
+    "fftNyquistHz": 26.409166666666668,
+    "fftSampleIntervalS": 0.018932820043545486,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

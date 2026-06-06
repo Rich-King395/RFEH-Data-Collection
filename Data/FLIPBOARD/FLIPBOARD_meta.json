@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "FLIPBOARD",
+  "createdAt": "2026-06-06T14:22:36",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238048,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\FLIPBOARD\\FLIPBOARD.csv",
+    "smoothCsv": "Data\\FLIPBOARD\\FLIPBOARD_smooth.csv",
+    "plot": "Data\\FLIPBOARD\\FLIPBOARD.png",
+    "fftCsv": "Data\\FLIPBOARD\\FLIPBOARD_fft.csv",
+    "fftPlot": "Data\\FLIPBOARD\\FLIPBOARD_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T14:22:36",
+    "sampleCount": 238048,
+    "csvPath": "Data\\FLIPBOARD\\FLIPBOARD.csv",
+    "smoothCsvPath": "Data\\FLIPBOARD\\FLIPBOARD_smooth.csv",
+    "pngPath": "Data\\FLIPBOARD\\FLIPBOARD.png",
+    "fftCsvPath": "Data\\FLIPBOARD\\FLIPBOARD_fft.csv",
+    "fftPngPath": "Data\\FLIPBOARD\\FLIPBOARD_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 60.86833333333333,
+    "fftNyquistHz": 30.434166666666666,
+    "fftSampleIntervalS": 0.016428903918293585,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

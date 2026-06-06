@@ -1,50 +1,48 @@
 {
   "status": "completed",
-  "folderName": "spotify",
-  "createdAt": "2026-05-27T18:11:12",
-  "durationSeconds": 600.0,
-  "sampleCount": 119027,
+  "folderName": "SPOTIFY",
+  "createdAt": "2026-06-05T10:34:18",
+  "durationSeconds": 2000.0,
+  "sampleCount": 262857,
   "smooth": true,
   "showRaw": true,
   "smoothWindow": 11,
   "rawHeader": [
     "Time(ms)",
-    "PCElapsed(ms)",
     "ADC",
     "Voltage(V)"
   ],
   "smoothHeader": [
     "Time(ms)",
-    "PCElapsed(ms)",
     "ADC",
     "Voltage(V)",
     "SmoothedVoltage(V)"
   ],
-  "fftMaxFrequencyHz": 3.0,
+  "fftMaxFrequencyHz": 1.0,
   "files": {
-    "rawCsv": "Data\\spotify\\spotify.csv",
-    "smoothCsv": "Data\\spotify\\spotify_smooth.csv",
-    "plot": "Data\\spotify\\spotify.png",
-    "fftCsv": "Data\\spotify\\spotify_fft.csv",
-    "fftPlot": "Data\\spotify\\spotify_fft.png"
+    "rawCsv": "Data\\SPOTIFY\\SPOTIFY.csv",
+    "smoothCsv": "Data\\SPOTIFY\\SPOTIFY_smooth.csv",
+    "plot": "Data\\SPOTIFY\\SPOTIFY.png",
+    "fftCsv": "Data\\SPOTIFY\\SPOTIFY_fft.csv",
+    "fftPlot": "Data\\SPOTIFY\\SPOTIFY_fft.png"
   },
   "error": "",
   "fftError": "",
   "result": {
-    "reason": "duration reached",
-    "completedAt": "2026-05-27T18:11:12",
-    "sampleCount": 119027,
-    "csvPath": "Data\\spotify\\spotify.csv",
-    "smoothCsvPath": "Data\\spotify\\spotify_smooth.csv",
-    "pngPath": "Data\\spotify\\spotify.png",
-    "fftCsvPath": "Data\\spotify\\spotify_fft.csv",
-    "fftPngPath": "Data\\spotify\\spotify_fft.png",
-    "fftMaxFrequencyHz": 3.0,
+    "reason": "manual stop",
+    "completedAt": "2026-06-05T10:34:18",
+    "sampleCount": 262857,
+    "csvPath": "Data\\SPOTIFY\\SPOTIFY.csv",
+    "smoothCsvPath": "Data\\SPOTIFY\\SPOTIFY_smooth.csv",
+    "pngPath": "Data\\SPOTIFY\\SPOTIFY.png",
+    "fftCsvPath": "Data\\SPOTIFY\\SPOTIFY_fft.csv",
+    "fftPngPath": "Data\\SPOTIFY\\SPOTIFY_fft.png",
+    "fftMaxFrequencyHz": 1.0,
     "fftTimeSource": "Time(ms)",
-    "fftSampleRateHz": 199.21869769559342,
-    "fftNyquistHz": 99.60934884779671,
-    "fftSampleIntervalS": 0.005019609161023641,
+    "fftSampleRateHz": 60.81560858997644,
+    "fftNyquistHz": 30.40780429498822,
+    "fftSampleIntervalS": 0.016443147132540886,
     "fftPreprocess": "demean + hann",
-    "fftBinCount": 1792
+    "fftBinCount": 1325
   }
 }

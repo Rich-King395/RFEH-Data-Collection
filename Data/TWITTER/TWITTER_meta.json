@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "TWITTER",
+  "createdAt": "2026-06-05T13:36:06",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238034,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\TWITTER\\TWITTER.csv",
+    "smoothCsv": "Data\\TWITTER\\TWITTER_smooth.csv",
+    "plot": "Data\\TWITTER\\TWITTER.png",
+    "fftCsv": "Data\\TWITTER\\TWITTER_fft.csv",
+    "fftPlot": "Data\\TWITTER\\TWITTER_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T13:36:06",
+    "sampleCount": 238034,
+    "csvPath": "Data\\TWITTER\\TWITTER.csv",
+    "smoothCsvPath": "Data\\TWITTER\\TWITTER_smooth.csv",
+    "pngPath": "Data\\TWITTER\\TWITTER.png",
+    "fftCsvPath": "Data\\TWITTER\\TWITTER_fft.csv",
+    "fftPngPath": "Data\\TWITTER\\TWITTER_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 55.46930663366708,
+    "fftNyquistHz": 27.73465331683354,
+    "fftSampleIntervalS": 0.018027988101676582,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

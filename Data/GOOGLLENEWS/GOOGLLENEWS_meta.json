@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "GOOGLLENEWS",
+  "createdAt": "2026-06-05T19:00:40",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238038,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\GOOGLLENEWS\\GOOGLLENEWS.csv",
+    "smoothCsv": "Data\\GOOGLLENEWS\\GOOGLLENEWS_smooth.csv",
+    "plot": "Data\\GOOGLLENEWS\\GOOGLLENEWS.png",
+    "fftCsv": "Data\\GOOGLLENEWS\\GOOGLLENEWS_fft.csv",
+    "fftPlot": "Data\\GOOGLLENEWS\\GOOGLLENEWS_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T19:00:40",
+    "sampleCount": 238038,
+    "csvPath": "Data\\GOOGLLENEWS\\GOOGLLENEWS.csv",
+    "smoothCsvPath": "Data\\GOOGLLENEWS\\GOOGLLENEWS_smooth.csv",
+    "pngPath": "Data\\GOOGLLENEWS\\GOOGLLENEWS.png",
+    "fftCsvPath": "Data\\GOOGLLENEWS\\GOOGLLENEWS_fft.csv",
+    "fftPngPath": "Data\\GOOGLLENEWS\\GOOGLLENEWS_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 60.37833333333334,
+    "fftNyquistHz": 30.18916666666667,
+    "fftSampleIntervalS": 0.01656223258895299,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

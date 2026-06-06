@@ -37,8 +37,8 @@ RECORDING_FFT_MIN_FREQUENCY_HZ = 0.1
 ROOT_DIR = Path(__file__).resolve().parent
 WEB_DIR = ROOT_DIR / "web"
 DATA_DIR = ROOT_DIR / "Data"
-RAW_CSV_HEADER = ["Time(ms)", "PCElapsed(ms)", "ADC", "Voltage(V)"]
-SMOOTH_CSV_HEADER = ["Time(ms)", "PCElapsed(ms)", "ADC", "Voltage(V)", "SmoothedVoltage(V)"]
+RAW_CSV_HEADER = ["Time(ms)", "ADC", "Voltage(V)"]
+SMOOTH_CSV_HEADER = ["Time(ms)", "ADC", "Voltage(V)", "SmoothedVoltage(V)"]
 
 
 def normalize_smooth_window(value: Any) -> int:
@@ -173,7 +173,6 @@ class RecordingManager:
 
             elapsed_ms = (time.monotonic() - self._started_at) * 1000.0
             row = [
-                f"{sample['arduinoTimeMs']:.0f}",
                 f"{elapsed_ms:.3f}",
                 sample["adc"],
                 f"{sample['voltage']:.3f}",
@@ -182,7 +181,6 @@ class RecordingManager:
             self._sample_count += 1
             self._samples.append(
                 {
-                    "arduinoTimeMs": sample["arduinoTimeMs"],
                     "pcElapsedMs": elapsed_ms,
                     "adc": sample["adc"],
                     "voltage": sample["voltage"],
@@ -339,7 +337,6 @@ class RecordingManager:
             for sample, smooth_voltage in zip(samples, smoothed):
                 writer.writerow(
                     [
-                        f"{sample['arduinoTimeMs']:.0f}",
                         f"{sample['pcElapsedMs']:.3f}",
                         sample["adc"],
                         f"{sample['voltage']:.3f}",
@@ -586,7 +583,7 @@ class RealtimeFftManager:
         if len(samples) < FFT_MIN_SAMPLES:
             return self._empty_result("Waiting for enough samples")
 
-        time_ms = [sample["arduinoTimeMs"] for sample in samples]
+        time_ms = [sample["pcTimeMs"] for sample in samples]
         voltage_v = [sample["voltage"] for sample in samples]
 
         unique_time_ms: list[float] = []

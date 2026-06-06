@@ -4,12 +4,13 @@ import csv
 import time
 from pathlib import Path
 
-from serial_utils import CSV_HEADER, parse_sample_line, sanitize_run_name
+from serial_utils import parse_sample_line, sanitize_run_name
 
 
 SERIAL_PORT = "COM3"
 BAUD_RATE = 115200
 DATA_DIR = Path(__file__).resolve().parent / "Data"
+RAW_CSV_HEADER = ["Time(ms)", "ADC", "Voltage(V)"]
 
 
 def ask_record_duration() -> float:
@@ -69,7 +70,7 @@ def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None,
 
         with csv_path.open("w", encoding="utf-8", newline="") as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(CSV_HEADER)
+            writer.writerow(RAW_CSV_HEADER)
 
             while True:
                 now = time.monotonic()
@@ -85,7 +86,8 @@ def record_samples(duration_s: float, run_name: str) -> tuple[Path, Path | None,
                 if sample is None:
                     continue
 
-                writer.writerow(sample)
+                elapsed_ms = (time.monotonic() - started_at) * 1000.0
+                writer.writerow([f"{elapsed_ms:.3f}", sample[1], sample[2]])
                 sample_count += 1
 
                 if now >= next_status_at:

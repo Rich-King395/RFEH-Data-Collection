@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "WIKIPEDIA",
+  "createdAt": "2026-06-06T12:06:51",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238045,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\WIKIPEDIA\\WIKIPEDIA.csv",
+    "smoothCsv": "Data\\WIKIPEDIA\\WIKIPEDIA_smooth.csv",
+    "plot": "Data\\WIKIPEDIA\\WIKIPEDIA.png",
+    "fftCsv": "Data\\WIKIPEDIA\\WIKIPEDIA_fft.csv",
+    "fftPlot": "Data\\WIKIPEDIA\\WIKIPEDIA_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-06T12:06:51",
+    "sampleCount": 238045,
+    "csvPath": "Data\\WIKIPEDIA\\WIKIPEDIA.csv",
+    "smoothCsvPath": "Data\\WIKIPEDIA\\WIKIPEDIA_smooth.csv",
+    "pngPath": "Data\\WIKIPEDIA\\WIKIPEDIA.png",
+    "fftCsvPath": "Data\\WIKIPEDIA\\WIKIPEDIA_fft.csv",
+    "fftPngPath": "Data\\WIKIPEDIA\\WIKIPEDIA_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 59.74579661062148,
+    "fftNyquistHz": 29.87289830531074,
+    "fftSampleIntervalS": 0.016737579155856833,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

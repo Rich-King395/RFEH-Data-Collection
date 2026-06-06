@@ -108,7 +108,7 @@ def main() -> None:
     parser.add_argument("-w", "--window", type=int, default=11, help="Moving average window size.")
     parser.add_argument("--no-smooth", action="store_true", help="Disable moving-average smoothing.")
     parser.add_argument("--hide-raw", action="store_true", help="Do not draw the raw voltage line.")
-    parser.add_argument("--no-normalize-time", action="store_true", help="Plot Arduino uptime instead of record-relative time.")
+    parser.add_argument("--no-normalize-time", action="store_true", help="Plot the saved Time(ms) values without shifting to zero.")
     parser.add_argument("--show", action="store_true", help="Show the plot window after saving.")
     args = parser.parse_args()
 

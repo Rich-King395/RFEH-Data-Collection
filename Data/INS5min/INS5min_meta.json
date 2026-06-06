@@ -1,0 +1,50 @@
+{
+  "status": "completed",
+  "folderName": "INS5min",
+  "createdAt": "2026-05-31T16:52:43",
+  "durationSeconds": 300.0,
+  "sampleCount": 59512,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\INS5min\\INS5min.csv",
+    "smoothCsv": "Data\\INS5min\\INS5min_smooth.csv",
+    "plot": "Data\\INS5min\\INS5min.png",
+    "fftCsv": "Data\\INS5min\\INS5min_fft.csv",
+    "fftPlot": "Data\\INS5min\\INS5min_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-31T16:52:43",
+    "sampleCount": 59512,
+    "csvPath": "Data\\INS5min\\INS5min.csv",
+    "smoothCsvPath": "Data\\INS5min\\INS5min_smooth.csv",
+    "pngPath": "Data\\INS5min\\INS5min.png",
+    "fftCsvPath": "Data\\INS5min\\INS5min_fft.csv",
+    "fftPngPath": "Data\\INS5min\\INS5min_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21867154076367,
+    "fftNyquistHz": 99.60933577038183,
+    "fftSampleIntervalS": 0.005019609820033271,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 298
+  }
+}

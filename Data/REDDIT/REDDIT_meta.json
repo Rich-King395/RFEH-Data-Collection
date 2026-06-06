@@ -1,0 +1,43 @@
+{
+  "status": "completed",
+  "folderName": "REDDIT",
+  "createdAt": "2026-06-05T13:04:41",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238059,
+  "smooth": false,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": null,
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\REDDIT\\REDDIT.csv",
+    "smoothCsv": null,
+    "plot": "Data\\REDDIT\\REDDIT.png",
+    "fftCsv": "Data\\REDDIT\\REDDIT_fft.csv",
+    "fftPlot": "Data\\REDDIT\\REDDIT_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T13:04:41",
+    "sampleCount": 238059,
+    "csvPath": "Data\\REDDIT\\REDDIT.csv",
+    "smoothCsvPath": null,
+    "pngPath": "Data\\REDDIT\\REDDIT.png",
+    "fftCsvPath": "Data\\REDDIT\\REDDIT_fft.csv",
+    "fftPngPath": "Data\\REDDIT\\REDDIT_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 46.240833333333335,
+    "fftNyquistHz": 23.120416666666667,
+    "fftSampleIntervalS": 0.02162590783758943,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}

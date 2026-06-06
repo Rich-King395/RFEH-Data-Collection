@@ -1,0 +1,44 @@
+{
+  "status": "completed",
+  "folderName": "YOUTUBE5min",
+  "createdAt": "2026-05-31T16:19:47",
+  "durationSeconds": 300.0,
+  "sampleCount": 59517,
+  "smooth": false,
+  "showRaw": true,
+  "smoothWindow": 1,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": null,
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\YOUTUBE5min\\YOUTUBE5min.csv",
+    "smoothCsv": null,
+    "plot": "Data\\YOUTUBE5min\\YOUTUBE5min.png",
+    "fftCsv": "Data\\YOUTUBE5min\\YOUTUBE5min_fft.csv",
+    "fftPlot": "Data\\YOUTUBE5min\\YOUTUBE5min_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-31T16:19:47",
+    "sampleCount": 59517,
+    "csvPath": "Data\\YOUTUBE5min\\YOUTUBE5min.csv",
+    "smoothCsvPath": null,
+    "pngPath": "Data\\YOUTUBE5min\\YOUTUBE5min.png",
+    "fftCsvPath": "Data\\YOUTUBE5min\\YOUTUBE5min_fft.csv",
+    "fftPngPath": "Data\\YOUTUBE5min\\YOUTUBE5min_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.21873692455483,
+    "fftNyquistHz": 99.60936846227742,
+    "fftSampleIntervalS": 0.005019608172592245,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 298
+  }
+}

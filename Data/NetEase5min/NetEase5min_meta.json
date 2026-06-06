@@ -1,0 +1,44 @@
+{
+  "status": "completed",
+  "folderName": "NetEase5min",
+  "createdAt": "2026-05-31T16:30:28",
+  "durationSeconds": 300.0,
+  "sampleCount": 59513,
+  "smooth": false,
+  "showRaw": true,
+  "smoothWindow": 1,
+  "rawHeader": [
+    "Time(ms)",
+    "PCElapsed(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": null,
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\NetEase5min\\NetEase5min.csv",
+    "smoothCsv": null,
+    "plot": "Data\\NetEase5min\\NetEase5min.png",
+    "fftCsv": "Data\\NetEase5min\\NetEase5min_fft.csv",
+    "fftPlot": "Data\\NetEase5min\\NetEase5min_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-05-31T16:30:28",
+    "sampleCount": 59513,
+    "csvPath": "Data\\NetEase5min\\NetEase5min.csv",
+    "smoothCsvPath": null,
+    "pngPath": "Data\\NetEase5min\\NetEase5min.png",
+    "fftCsvPath": "Data\\NetEase5min\\NetEase5min_fft.csv",
+    "fftPngPath": "Data\\NetEase5min\\NetEase5min_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 199.2193515127574,
+    "fftNyquistHz": 99.6096757563787,
+    "fftSampleIntervalS": 0.0050195926871891405,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 298
+  }
+}

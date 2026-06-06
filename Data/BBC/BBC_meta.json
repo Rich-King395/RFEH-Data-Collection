@@ -1,0 +1,48 @@
+{
+  "status": "completed",
+  "folderName": "BBC",
+  "createdAt": "2026-06-05T16:43:29",
+  "durationSeconds": 1200.0,
+  "sampleCount": 238033,
+  "smooth": true,
+  "showRaw": true,
+  "smoothWindow": 11,
+  "rawHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)"
+  ],
+  "smoothHeader": [
+    "Time(ms)",
+    "ADC",
+    "Voltage(V)",
+    "SmoothedVoltage(V)"
+  ],
+  "fftMaxFrequencyHz": 1.0,
+  "files": {
+    "rawCsv": "Data\\BBC\\BBC.csv",
+    "smoothCsv": "Data\\BBC\\BBC_smooth.csv",
+    "plot": "Data\\BBC\\BBC.png",
+    "fftCsv": "Data\\BBC\\BBC_fft.csv",
+    "fftPlot": "Data\\BBC\\BBC_fft.png"
+  },
+  "error": "",
+  "fftError": "",
+  "result": {
+    "reason": "duration reached",
+    "completedAt": "2026-06-05T16:43:29",
+    "sampleCount": 238033,
+    "csvPath": "Data\\BBC\\BBC.csv",
+    "smoothCsvPath": "Data\\BBC\\BBC_smooth.csv",
+    "pngPath": "Data\\BBC\\BBC.png",
+    "fftCsvPath": "Data\\BBC\\BBC_fft.csv",
+    "fftPngPath": "Data\\BBC\\BBC_fft.png",
+    "fftMaxFrequencyHz": 1.0,
+    "fftTimeSource": "Time(ms)",
+    "fftSampleRateHz": 54.99323324310991,
+    "fftNyquistHz": 27.496616621554956,
+    "fftSampleIntervalS": 0.01818405540149414,
+    "fftPreprocess": "demean + hann",
+    "fftBinCount": 1200
+  }
+}
